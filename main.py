@@ -3,7 +3,7 @@ import logging
 import socket
 import threading
 import datetime as dt
-from dateutil.parser import parse
+from dateutil import parser
 
 import RPi.GPIO as GPIO
 
@@ -46,15 +46,15 @@ temperature = Temperature()
 
 def check():
     print("check()")
-    next_date = parse(setup["nextRunTime"])
+    next_date = parser.parse(setup["nextRunTime"])
     conditions = get_temperature()
-    if dt.date.today() > parse(temperature.get_today()["date"]).date():
+    if dt.date.today() > parser.parse(temperature.get_today()["date"]).date():
         temperature.reset_temp()
     temperature.add_temp(conditions[0])
     print(temperature.get_today_avg())
     if next_date < dt.datetime.now():
         # TODO start
-        start_time = parse(setup["startTime"])
+        start_time = parser.parse(setup["startTime"])
         next_date = dt.datetime.now()
         next_date += dt.timedelta(days=setup["interval"])
         next_date = next_date.replace(hour=start_time.hour, minute=start_time.minute, second=0, microsecond=0)
@@ -81,6 +81,17 @@ def relay_action(pin_in):
                    data=action), 200
 
 
+@app.route('/getTemp')
+def get_temp():
+    cond = get_temperature()
+    ret = {
+        "temp": cond[0],
+        "humidity": cond[1],
+        "avg_temp": temperature.get_today()
+    }
+    return json.dumps(ret)
+
+
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'), 'favicon.ico', mimetype='image/vnd.microsoft.icon')
@@ -97,16 +108,6 @@ if __name__ == '__main__':
     logger.info("app host_name[" + host_name + "]")
     load()
     check()
-
-    val1 = dt.date.today()
-    print(val1)
-    gw = os.popen("ip -j -4 route").read().split()
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect((gw[2], 0))
-    ipaddr = s.getsockname()[0]
-    gateway = gw[2]
-    host = socket.gethostname()
-    print("IP:", ipaddr, " GW:", gateway, " Host:", host)
 
     # app.run(ssl_context='adhoc', host=host_name, port=1983)
     app.run(host=host_name, port=1983)
