@@ -12,7 +12,7 @@ from flask import Flask, request, jsonify, send_from_directory
 from temperature import Temperature
 from setup import setup, save, load
 from relay import Relay
-from static import get_logging_level
+from static import get_logging_level, get_temperature
 import os
 
 app = Flask(__name__)
@@ -47,9 +47,10 @@ temperature = Temperature()
 def check():
     print("check()")
     next_date = parse(setup["nextRunTime"])
+    conditions = get_temperature()
     if dt.date.today() > parse(temperature.get_today()["date"]).date():
         temperature.reset_temp()
-    temperature.add_temp(10)
+    temperature.add_temp(conditions[0])
     print(temperature.get_today_avg())
     if next_date < dt.datetime.now():
         # TODO start

@@ -42,7 +42,7 @@ setup = {
 
 
 def save():
-    f = open("msg.json", "w")
+    f = open("setup.json", "w")
     f.write(json.dumps(setup))
     f.close()
 
