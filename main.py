@@ -66,6 +66,14 @@ def check():
     timer.start()
 
 
+def get_temp_str(c):
+    return f"{c:.1f}\u00b0" + f" [{get_f(c):.1f}\u00b0]"
+
+
+def get_f(c):
+    return c*1.8+32
+
+
 @app.route('/relay/<pin_in>')
 def relay_action(pin_in):
     logger.debug(f"relay[{pin_in}] action[ON] time[1]")
@@ -85,9 +93,9 @@ def relay_action(pin_in):
 def get_temp():
     cond = get_temperature()
     ret = {
-        "temp": f"{cond[0]: .1f}",
+        "temp": get_temp_str(cond[0]),
         "humidity": f"{cond[1]: .0f}",
-        "avg_temp": f"{temperature.get_today_avg(): .1f}"
+        "avg_temp": get_temp_str(temperature.get_today_avg())
     }
     return json.dumps(ret)
 
