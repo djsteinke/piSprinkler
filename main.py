@@ -47,7 +47,7 @@ t = Temperature()
 
 
 def check():
-    print("check()")
+    logger.debug("check()")
     next_date = parser.parse(setup["nextRunTime"])
     if next_date < dt.datetime.now():
         # TODO start
@@ -57,7 +57,7 @@ def check():
         next_date = next_date.replace(hour=start_time.hour, minute=start_time.minute, second=0, microsecond=0)
         setup["nextRunTime"] = str(next_date)
         save()
-        print(next_date)
+        logger.info(next_date)
     timer = threading.Timer(60, check)
     timer.start()
 

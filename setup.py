@@ -2,7 +2,7 @@ import json
 
 setup = {
     "zones": 5,
-    "interval": 2,
+    "interval": 1,
     "startTime": "2000-01-01 06:30:00",
     "nextRunTime": "2020-01-01 06:30:00",
     "pins": [0, 1, 2, 3, 4],
