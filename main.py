@@ -85,8 +85,8 @@ def relay_action(pin_in):
 def get_temp():
     cond = get_temperature()
     ret = {
-        "temp": cond[0],
-        "humidity": cond[1],
+        "temp": f"{cond[0]:0.1f}",
+        "humidity": f"{cond[1]:0.0f}",
         "avg_temp": temperature.get_today()
     }
     return json.dumps(ret)
