@@ -4,11 +4,7 @@ import datetime as dt
 
 class Temperature(object):
     def __init__(self):
-        self._hist = {"history": []}
-        self._today = {
-            "date": "2020-01-01",
-            "temp": []
-        }
+        self.load()
 
     def get_today_avg(self):
         t_tot = 0
