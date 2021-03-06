@@ -96,7 +96,7 @@ def get_temp():
     cond = get_temperature()
     ret = {
         "temp": get_temp_str(cond[0]),
-        "humidity": f"{cond[1]:.0f}",
+        "humidity": f"{cond[1]:.0f}%",
         "avg_temp": get_temp_str(temperature.get_today_avg())
     }
     return json.dumps(ret)
