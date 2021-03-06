@@ -88,10 +88,12 @@ def relay_action(pin_in):
 @app.route('/getTemp')
 def get_temp():
     cond = get_temperature()
+    cond_avg = t.get_today_avg()
     ret = {
         "temp": get_temp_str(cond[0]),
         "humidity": f"{cond[1]:.0f}%",
-        "avg_temp": get_temp_str(t.get_today_avg())
+        "avg_temp": get_temp_str(cond_avg[0]),
+        "avg_humidity": f"{cond_avg[1]}"
     }
     return json.dumps(ret)
 

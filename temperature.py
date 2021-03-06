@@ -15,26 +15,41 @@ class Temperature(object):
     def get_today_avg(self):
         t_tot = 0
         t_cnt = 0
+        avg = []
         for t in self._today["temp"]:
             t_tot += t
             t_cnt += 1
         if t_cnt > 0:
-            return t_tot/t_cnt
+            avg[0] = t_tot/t_cnt
         else:
-            return 0
+            avg[0] = 0
+        h_tot = 0
+        h_cnt = 0
+        for h in self._today["humidity"]:
+            h_tot += h
+            h_cnt += 1
+        if h_cnt > 0:
+            avg[1] = h_tot/h_cnt
+        else:
+            avg[1] = 0
+        return avg
 
-    def add_temp(self, t):
-        self._today["temp"].append(t)
+    def add_temp(self):
+        c = get_temperature()
+        self._today["temp"].append(c[0])
+        self._today["humidity"].append(c[1])
         avg = self.get_today_avg()
         found = False
         for hist in self._hist["history"]:
             if hist["date"] == self._today["date"]:
-                hist["temp"] = avg
+                hist["temp"] = avg[0]
+                hist["humidity"] = avg[1]
                 found = True
         if not found:
             self._hist["history"].append({
                 "date": self._today["date"],
-                "temp": avg
+                "temp": avg[0],
+                "humidity": avg[1]
             })
         self.save()
 
@@ -70,11 +85,10 @@ class Temperature(object):
         timer.start()
 
     def record(self):
-        c = get_temperature()
         if dt.date.today() != self._date:
             self.reset_today()
             self._date = dt.date.today()
-        self.add_temp(c[0])
+        self.add_temp()
         timer = threading.Timer(1800, self.record)
         timer.start()
 
