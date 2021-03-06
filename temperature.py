@@ -54,11 +54,11 @@ class Temperature(object):
 
     def load(self):
         try:
-            f = open("temperature.json", "r")
-            self._hist = json.loads(f.read())
-            f.close()
-            f = open("today_temp.json", "r")
-            self._today = json.loads(f.read())
-            f.close()
+            tmp = open("temperature.json", "r")
+            self._hist = json.loads(tmp.read())
+            tmp.close()
+            td = open("today_temp.json", "r")
+            self._today = json.loads(td.read())
+            td.close()
         except FileNotFoundError:
             self.save()
