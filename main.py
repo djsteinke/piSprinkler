@@ -114,6 +114,6 @@ if __name__ == '__main__':
     logger.info("app host_name[" + host_name + "]")
     load()
     check()
-    t.record()
+    t.start()
     # app.run(ssl_context='adhoc', host=host_name, port=1983)
     app.run(host=host_name, port=1983)

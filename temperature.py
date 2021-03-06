@@ -65,6 +65,10 @@ class Temperature(object):
         except FileNotFoundError:
             self.save()
 
+    def start(self):
+        timer = threading.Timer(1800, self.record)
+        timer.start()
+
     def record(self):
         c = get_temperature()
         if dt.date.today() != self._date:
