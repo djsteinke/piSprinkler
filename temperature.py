@@ -1,9 +1,15 @@
 import json
 import datetime as dt
+import threading
+
+from static import get_temperature
 
 
 class Temperature(object):
     def __init__(self):
+        self._today = {}
+        self._hist = {}
+        self._date = dt.date.today()
         self.load()
 
     def get_today_avg(self):
@@ -32,7 +38,7 @@ class Temperature(object):
             })
         self.save()
 
-    def reset_temp(self):
+    def reset_today(self):
         today = dt.date.today()
         self._today["date"] = str(today)
         self._today["temp"] = []
@@ -58,3 +64,13 @@ class Temperature(object):
             td.close()
         except FileNotFoundError:
             self.save()
+
+    def record(self):
+        c = get_temperature()
+        if dt.date.today() != self._date:
+            self.reset_today()
+            self._date = dt.date.today()
+        self.add_temp(c[0])
+        timer = threading.Timer(1800, self.record)
+        timer.start()
+

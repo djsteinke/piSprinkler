@@ -43,17 +43,12 @@ relay = Relay(0)
 
 zones = [Relay(0), Relay(1), Relay(1), Relay(1), Relay(1)]
 
-temperature = Temperature()
+t = Temperature()
 
 
 def check():
     print("check()")
     next_date = parser.parse(setup["nextRunTime"])
-    conditions = get_temperature()
-    if dt.date.today() > parser.parse(temperature.get_today()["date"]).date():
-        temperature.reset_temp()
-    temperature.add_temp(conditions[0])
-    print(temperature.get_today_avg())
     if next_date < dt.datetime.now():
         # TODO start
         start_time = parser.parse(setup["startTime"])
@@ -63,7 +58,6 @@ def check():
         setup["nextRunTime"] = str(next_date)
         save()
         print(next_date)
-    print(json.dumps(setup))
     timer = threading.Timer(60, check)
     timer.start()
 
@@ -97,7 +91,7 @@ def get_temp():
     ret = {
         "temp": get_temp_str(cond[0]),
         "humidity": f"{cond[1]:.0f}%",
-        "avg_temp": get_temp_str(temperature.get_today_avg())
+        "avg_temp": get_temp_str(t.get_today_avg())
     }
     return json.dumps(ret)
 
@@ -120,6 +114,6 @@ if __name__ == '__main__':
     logger.info("app host_name[" + host_name + "]")
     load()
     check()
-
+    t.record()
     # app.run(ssl_context='adhoc', host=host_name, port=1983)
     app.run(host=host_name, port=1983)
