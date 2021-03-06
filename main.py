@@ -15,6 +15,8 @@ from relay import Relay
 from static import get_logging_level, get_temperature
 import os
 
+degree_sign = u"\N{DEGREE SIGN}"
+
 app = Flask(__name__)
 
 # create logger with 'spam_application'
@@ -67,7 +69,7 @@ def check():
 
 
 def get_temp_str(c):
-    return f"{c:.1f}\u00b0" + f" [{get_f(c):.1f}\u00b0]"
+    return f"{c:.1f}" + degree_sign + f" [{get_f(c):.1f}" + degree_sign + "]"
 
 
 def get_f(c):
