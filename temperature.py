@@ -15,7 +15,7 @@ class Temperature(object):
     def get_today_avg(self):
         t_tot = 0
         t_cnt = 0
-        avg = []
+        avg = [0.0, 0.0]
         for t in self._today["temp"]:
             t_tot += t
             t_cnt += 1
