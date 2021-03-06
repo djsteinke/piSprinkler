@@ -85,9 +85,9 @@ def relay_action(pin_in):
 def get_temp():
     cond = get_temperature()
     ret = {
-        "temp": f"{cond[0]:0.1f}",
-        "humidity": f"{cond[1]:0.0f}",
-        "avg_temp": temperature.get_today()
+        "temp": f"{cond[0]: .1f}",
+        "humidity": f"{cond[1]: .0f}",
+        "avg_temp": f"{temperature.get_today_avg(): .1f}"
     }
     return json.dumps(ret)
 
@@ -101,8 +101,10 @@ if __name__ == '__main__':
     host_name = socket.gethostbyname(socket.gethostname())
     logger.info("machine host_name[" + host_name + "]")
     print(host_name + "[" + host_name[0: 3] + "]")
-    if host_name[0: 3] == "192" or host_name[0: 3] == "127":
+    if host_name[0: 3] == "127":
         host_name = "192.168.0.152"
+    elif host_name[0: 3] == "192":
+        val = 1
     else:
         host_name = "localhost"
     logger.info("app host_name[" + host_name + "]")

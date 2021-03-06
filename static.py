@@ -21,7 +21,6 @@ def get_logging_level():
 def get_temperature():
     bus.write_i2c_block_data(0x38, 0xE1, config)
     byt = bus.read_byte(0x38)
-    print(byt & 0x68)
     measure_cmd = [0x33, 0x00]
     bus.write_i2c_block_data(0x38, 0xAC, measure_cmd)
     time.sleep(0.5)
