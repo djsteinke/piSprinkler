@@ -69,7 +69,7 @@ def check():
 
 
 def get_temp_str(c):
-    return f"{c:.1f}" + f" [{get_f(c):.1f}]"
+    return f"{c:.1f}c" + f" [{get_f(c):.1f}f]"
 
 
 def get_f(c):
