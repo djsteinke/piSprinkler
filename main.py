@@ -101,7 +101,7 @@ def get_temp():
         "avg_temp": get_temp_str(cond_avg[0]),
         "avg_humidity": f"{cond_avg[1]:.0f}%"
     }
-    return json.dumps(ret, indent=2)
+    return json.dumps(ret, indent=4)
 
 
 @app.route('/favicon.ico')
