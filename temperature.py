@@ -57,6 +57,7 @@ class Temperature(object):
         today = dt.date.today()
         self._today["date"] = str(today)
         self._today["temp"] = []
+        self._today["humidity"] = []
 
     def get_today(self):
         return self._today
