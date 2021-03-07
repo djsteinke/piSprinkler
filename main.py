@@ -108,8 +108,8 @@ def get_temp():
 def get_temp_str():
     cond = get_temperature()
     cond_avg = t.get_today_avg()
-    ret = f"temp: {get_temp_str(cond[0])} \n" + f"humidity: {cond[1]:.0f}% \n" + \
-          f"avg_temp: {get_temp_str(cond_avg[0])} \n" + f"avg_humidity: {cond_avg[1]:.0f}%"
+    ret = f"temp: {get_temp_str(cond[0])} \n" + f"humidity: {cond[1]:.0f}% \n"
+    ret += f"avg_temp: {get_temp_str(cond_avg[0])} \n" + f"avg_humidity: {cond_avg[1]:.0f}%"
     return ret
 
 
