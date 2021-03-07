@@ -47,8 +47,8 @@ t = Temperature()
 
 
 def check():
-    logger.debug(f"check() [{dt.datetime.now()}")
     next_date = parser.parse(setup["nextRunTime"])
+    logger.debug(f"check() now[{dt.datetime.now()}] next[{next_date}]")
     if next_date < dt.datetime.now():
         # TODO start
         start_time = parser.parse(setup["startTime"])
@@ -83,6 +83,12 @@ def relay_action(pin_in):
     return jsonify(message="Success",
                    statusCode=200,
                    data=action), 200
+
+
+@app.route("/setup/<action>")
+def setup_cmd(action):
+    if action == "load":
+        load()
 
 
 @app.route('/getTemp')
