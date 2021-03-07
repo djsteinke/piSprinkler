@@ -101,6 +101,15 @@ def get_temp():
         "avg_temp": get_temp_str(cond_avg[0]),
         "avg_humidity": f"{cond_avg[1]:.0f}%"
     }
+    return
+
+
+@app.route('/getTempStr')
+def get_temp():
+    cond = get_temperature()
+    cond_avg = t.get_today_avg()
+    ret = f"temp: {get_temp_str(cond[0])} \n" + f"humidity: {cond[1]:.0f}% \n" + \
+          f"avg_temp: {get_temp_str(cond_avg[0])} \n" + f"avg_humidity: {cond_avg[1]:.0f}%"
     return ret
 
 
