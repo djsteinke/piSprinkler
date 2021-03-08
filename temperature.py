@@ -8,8 +8,8 @@ from static import get_temperature
 
 class Temperature(object):
     def __init__(self):
-        self._today = {}
-        self._hist = {}
+        self._today = {"date": "2020-01-01 00:00:00", "temp": [], "humidity": []}
+        self._hist = {"history": []}
         self._date = dt.date.today()
         self.load()
 
@@ -94,4 +94,8 @@ class Temperature(object):
         self.add_temp()
         timer = threading.Timer(1800, self.record)
         timer.start()
+
+    @property
+    def hist(self):
+        return self._hist
 

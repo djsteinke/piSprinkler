@@ -9,8 +9,9 @@ import RPi.GPIO as GPIO
 
 from flask import Flask, request, jsonify, send_from_directory
 
+from program import Program
 from temperature import Temperature
-from setup import setup, save, load
+from setup import Setup
 from relay import Relay
 from static import get_logging_level, get_temperature
 import os
@@ -39,24 +40,23 @@ logger.addHandler(ch)
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
-relay = Relay(0)
-
-zones = [Relay(0), Relay(1), Relay(1), Relay(1), Relay(1)]
-
 t = Temperature()
+s = Setup()
 
 
 def check():
-    next_date = parser.parse(setup["nextRunTime"])
+    next_date = parser.parse(s.setup["nextRunTime"])
     logger.debug(f"check() now[{dt.datetime.now()}] next[{next_date}]")
     if next_date < dt.datetime.now():
-        # TODO start
-        start_time = parser.parse(setup["startTime"])
+        p = Program(s.setup["programs"][0], s.setup["zones"], t.hist)
+        p.start()
+        start_time = parser.parse(s.setup["startTime"])
         next_date = dt.datetime.now()
-        next_date += dt.timedelta(days=setup["interval"])
+        next_date += dt.timedelta(days=s.setup["interval"])
         next_date = next_date.replace(hour=start_time.hour, minute=start_time.minute, second=0, microsecond=0)
-        setup["nextRunTime"] = str(next_date)
-        save()
+        s.setup["nextRunTime"] = str(next_date)
+        logger.debug(f"next run {next_date}")
+        s.save()
         logger.info(next_date)
     timer = threading.Timer(60, check)
     timer.start()
@@ -73,12 +73,13 @@ def get_f(c):
 @app.route('/relay/<pin_in>')
 def relay_action(pin_in):
     logger.debug(f"relay[{pin_in}] action[ON] time[1]")
-    relay.set_pin(int(pin_in))
+
+    # relay.set_pin(int(pin_in))
     action = "on"
-    if action == "on":
-        relay.on()
-    else:
-        relay.off()
+    # if action == "on":
+     #    relay.on()
+    # else:
+      #  relay.off()
     # pin_state = GPIO.input(pin)
     return jsonify(message="Success",
                    statusCode=200,
@@ -88,7 +89,8 @@ def relay_action(pin_in):
 @app.route("/setup/<action>")
 def setup_cmd(action):
     if action == "load":
-        load()
+        s.load()
+        s.save()
 
 
 @app.route('/getTemp')
@@ -96,26 +98,27 @@ def get_temp():
     cond = get_temperature()
     cond_avg = t.get_today_avg()
     ret = {
-        "temp": get_temp_str(cond[0]),
-        "humidity": f"{cond[1]:.0f}%",
-        "avg_temp": get_temp_str(cond_avg[0]),
-        "avg_humidity": f"{cond_avg[1]:.0f}%"
+        "temp": cond[0],
+        "humidity": cond[1],
+        "avg_temp": cond_avg[0],
+        "avg_humidity": cond_avg[1]
     }
-    return ret
+    return ret, 200
 
 
 @app.route('/getTempStr')
-def get_temp_string():
+def get_temp_html():
     cond = get_temperature()
     cond_avg = t.get_today_avg()
     ret = f"temp: {get_temp_str(cond[0])} <br/>" + f"humidity: {cond[1]:.0f}% <br/>"
     ret += f"avg_temp: {get_temp_str(cond_avg[0])} <br/>" + f"avg_humidity: {cond_avg[1]:.0f}%"
-    return ret
+    return ret, 200
 
 
 @app.route('/favicon.ico')
 def favicon():
-    return send_from_directory(os.path.join(app.root_path, 'static'), 'favicon.ico', mimetype='image/vnd.microsoft.icon')
+    return send_from_directory(os.path.join(app.root_path, 'static'), 'favicon.ico',
+                               mimetype='image/vnd.microsoft.icon')
 
 
 if __name__ == '__main__':
@@ -129,7 +132,7 @@ if __name__ == '__main__':
     else:
         host_name = "localhost"
     logger.info("app host_name[" + host_name + "]")
-    load()
+    # s.load()
     check()
     t.start()
     # app.run(ssl_context='adhoc', host=host_name, port=1983)
