@@ -30,7 +30,7 @@ setup_msg = {
     ],
     "interval": 1,
     "startTime": "2000-01-01 06:30:00",
-    "nextRunTime": "2021-03-05 06:30:00",
+    "nextRunTime": "2021-03-03 06:30:00",
     "programs": [
         {
             "nextRunTime": "2020-01-01 06:30:00",
