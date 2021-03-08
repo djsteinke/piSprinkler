@@ -1,5 +1,6 @@
 import json
 import datetime as dt
+from dateutil import parser
 import threading
 
 from static import get_temperature
@@ -78,11 +79,12 @@ class Temperature(object):
             td = open("today_t.json", "r")
             self._today = json.loads(td.read())
             td.close()
+            self._date = parser.parse(self._today["date"]).date()
         except FileNotFoundError:
             self.save()
 
     def start(self):
-        timer = threading.Timer(1800, self.record)
+        timer = threading.Timer(300, self.record)
         timer.start()
 
     def record(self):
