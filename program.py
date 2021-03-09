@@ -43,8 +43,9 @@ class Program(ProgramWithEvents):
                         r = Relay(pin, self.run_step)
                         t = self.det_run_time(head)
                         print(f"zone[{zone}] head[{head}] pin[{pin}] time[{t}]")
-                        r.set_run_time(int(t))
-                        r.on()
+                        if t > 0:
+                            r.set_run_time(int(t))
+                            r.on()
         self._step += 1
 
     def det_run_time(self, h):
