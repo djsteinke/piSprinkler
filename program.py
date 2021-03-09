@@ -53,6 +53,8 @@ class Program(ProgramWithEvents):
                         if t > 0:
                             r.set_run_time(int(t))
                             r.on()
+                        else:
+                            self.run_step()
         self._step += 1
 
     def det_run_time(self, h):
@@ -82,4 +84,5 @@ class Program(ProgramWithEvents):
         if average_temps[month] > 0:
             per_temp = avg_temp/average_temps[month]
         print(f"{avg_temp} {average_temps[month]} {watering_times[h][month]}")
+        module_logger.debug(f"{avg_temp} {average_temps[month]} {watering_times[h][month]}")
         return watering_times[h][month]*per_temp
