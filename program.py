@@ -69,13 +69,13 @@ class Program(ProgramWithEvents):
         act_temp = 0
         act_cnt = 0
         for day in self._t["history"]:
-            if day["date"] == str(date):
+            if day["date"] == str(date.date()):
                 act_temp += day["temp"]
                 act_cnt += 1
                 break
         date -= dt.timedelta(days=1)
         for day in self._t["history"]:
-            if day["date"] == str(date):
+            if day["date"] == str(date.date()):
                 act_temp += day["temp"]
                 act_cnt += 1
                 break
