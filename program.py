@@ -31,6 +31,7 @@ class Program(ProgramWithEvents):
 
     def run_step(self):
         print(f"run_step() {self._step} of {len(self._z)}")
+        module_logger.debug(f"run_step() {self._step} of {len(self._z)}")
         if self._step > len(self._p["steps"]):
             self.complete()
         else:
@@ -48,6 +49,7 @@ class Program(ProgramWithEvents):
                         r = Relay(pin, self.run_step)
                         t = self.det_run_time(head)
                         print(f"zone[{zone}] head[{head}] pin[{pin}] time[{t}]")
+                        module_logger.debug(f"zone[{zone}] head[{head}] pin[{pin}] time[{t}]")
                         if t > 0:
                             r.set_run_time(int(t))
                             r.on()
