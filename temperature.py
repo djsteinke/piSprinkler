@@ -4,11 +4,18 @@ from dateutil import parser
 import threading
 
 from static import get_temperature
+from properties import temp_refresh_interval
 
 
 class Temperature(object):
     def __init__(self):
-        self._today = {"date": "2020-01-01 00:00:00", "temp": [], "humidity": []}
+        self._today = {
+            "date": "2020-01-01 00:00:00",
+            "temp": [],
+            "humidity": [],
+            "temp_max": 0,
+            "temp_min": 0
+        }
         self._hist = {"history": []}
         self._date = dt.date.today()
         self.load()
@@ -52,6 +59,18 @@ class Temperature(object):
                 "temp": avg[0],
                 "humidity": avg[1]
             })
+        if self._today["temp_max"] == 0 or self._today["temp_max"] < c[0]:
+            self._today["temp_max"] = c[0]
+            for hist in self._hist["history"]:
+                if hist["date"] == self._today["date"]:
+                    hist["temp_max"] = c[0]
+                    break
+        if self._today["temp_min"] == 0 or self._today["temp_min"] > c[0]:
+            self._today["temp_min"] = c[0]
+            for hist in self._hist["history"]:
+                if hist["date"] == self._today["date"]:
+                    hist["temp_min"] = c[0]
+                    break
         self.save()
 
     def reset_today(self):
@@ -59,6 +78,8 @@ class Temperature(object):
         self._today["date"] = str(today)
         self._today["temp"] = []
         self._today["humidity"] = []
+        self._today["temp_min"] = 0
+        self._today["temp_max"] = 0
 
     def get_today(self):
         return self._today
@@ -92,7 +113,7 @@ class Temperature(object):
             self.reset_today()
             self._date = dt.date.today()
         self.add_temp()
-        timer = threading.Timer(1800, self.record)
+        timer = threading.Timer(temp_refresh_interval, self.record)
         timer.start()
 
     @property
