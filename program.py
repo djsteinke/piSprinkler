@@ -54,7 +54,6 @@ class Program(object):
     def det_run_time(self, h):
         date = dt.datetime.today()
         month = dt.date.today().month - 1
-        month = 6
         date = date.replace(hour=0, minute=0, second=0, microsecond=0)
         date -= dt.timedelta(days=1)
         act_temp = 0
