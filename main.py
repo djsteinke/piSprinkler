@@ -108,11 +108,14 @@ def setup_cmd(action):
 def get_temp():
     cond = get_temperature()
     cond_avg = t.get_today_avg()
+    cond_max = t.get_today_max()
     ret = {
         "temp": cond[0],
         "humidity": cond[1],
         "avg_temp": cond_avg[0],
-        "avg_humidity": cond_avg[1]
+        "avg_humidity": cond_avg[1],
+        "temp_max": cond_max[0],
+        "temp_min": cond_max[1]
     }
     return ret, 200
 
