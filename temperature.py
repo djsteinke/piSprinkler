@@ -84,6 +84,9 @@ class Temperature(object):
     def get_today(self):
         return self._today
 
+    def get_today_max(self):
+        return [self._today['temp_max'], self._today['temp_min']]
+
     def save(self):
         f = open("t.json", "w")
         f.write(json.dumps(self._hist))

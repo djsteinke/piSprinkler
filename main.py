@@ -110,8 +110,10 @@ def get_temp():
 def get_temp_html():
     cond = get_temperature()
     cond_avg = t.get_today_avg()
-    ret = f"temp: {get_temp_str(cond[0])} <br/>" + f"humidity: {cond[1]:.0f}% <br/>"
-    ret += f"avg_temp: {get_temp_str(cond_avg[0])} <br/>" + f"avg_humidity: {cond_avg[1]:.0f}%"
+    cond_max = t.get_today_max()
+    ret = f"Temp: {get_temp_str(cond[0])} <br/>" + f"Humidity: {cond[1]:.0f}% <br/>"
+    ret += f"Temp Avg: {get_temp_str(cond_avg[0])} <br/>" + f"Humidity Avg: {cond_avg[1]:.0f}%"
+    ret += f"Temp Max: {get_temp_str(cond_max[0])} <br/>" + f"Temp Min: {cond_max[1]:.0f}%"
     return ret, 200
 
 
