@@ -7,22 +7,12 @@ from static import watering_times, average_temps
 module_logger = logging.getLogger('main.program')
 
 
-class ProgramWithEvents(object):
-    callback = None
-
-    def on_complete(self, callback):
-        self.callback = callback
-
-    def complete(self):
-        if self.callback is not None:
-            self.callback(self)
-
-
-class Program(ProgramWithEvents):
-    def __init__(self, p, z, t):
+class Program(object):
+    def __init__(self, p, z, t, callback):
         self._p = p
         self._z = z
         self._t = t
+        self._callback = callback
         self._step = 1
 
     def start(self):
@@ -33,7 +23,9 @@ class Program(ProgramWithEvents):
         print(f"run_step() {self._step} of {len(self._z)}")
         module_logger.debug(f"run_step() {self._step} of {len(self._z)}")
         if self._step > len(self._p["steps"]):
-            self.complete()
+            module_logger.debug("Program.complete()")
+            if self._callback is not None:
+                self._callback()
         else:
             run = False
             for step in self._p["steps"]:
