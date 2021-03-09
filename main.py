@@ -47,19 +47,20 @@ p_running = False
 
 def check():
     global p_running
-    next_date = parser.parse(s.setup["nextRunTime"])
-    logger.debug(f"check() now[{dt.datetime.now()}] next[{next_date}]")
-    if next_date < dt.datetime.now():
-        p = Program(s.setup["programs"][0], s.setup["zones"], t.hist, program_complete)
-        p_running = True
-        p.start()
-        start_time = parser.parse(s.setup["startTime"])
-        next_date = dt.datetime.now()
-        next_date += dt.timedelta(days=s.setup["interval"])
-        next_date = next_date.replace(hour=start_time.hour, minute=start_time.minute, second=0, microsecond=0)
-        s.setup["nextRunTime"] = str(next_date)
-        logger.info(f"next run {next_date}")
-        s.save()
+    for program in s.setup['programs']:
+        next_date = parser.parse(program["nextRunTime"])
+        logger.debug(f"check() now[{dt.datetime.now()}] next[{next_date}]")
+        if next_date < dt.datetime.now() and not p_running:
+            p = Program(s.setup["programs"][0], s.setup["zones"], t.hist, program_complete)
+            p_running = True
+            p.start()
+            start_time = parser.parse(program["startTime"])
+            next_date = dt.datetime.now()
+            next_date += dt.timedelta(days=program["interval"])
+            next_date = next_date.replace(hour=start_time.hour, minute=start_time.minute, second=0, microsecond=0)
+            program["nextRunTime"] = str(next_date)
+            logger.info(f"next run {next_date}")
+            s.save()
     timer = threading.Timer(60, check)
     timer.start()
 

@@ -28,62 +28,31 @@ setup_msg = {
             "pin": 1
         }
     ],
-    "interval": 1,
-    "startTime": "2000-01-01 06:30:00",
-    "nextRunTime": "2021-03-03 06:30:00",
     "programs": [
         {
             "nextRunTime": "2020-01-01 06:30:00",
+            "startTime": "2000-01-01 06:30:00",
+            "interval": 1,
             "steps": [
                 {
                     "step": 1,
-                    "zone": 3,
-                    "time": [
-                        35,
-                        40,
-                        45,
-                        50
-                    ]
+                    "zone": 3
                 },
                 {
                     "step": 2,
-                    "zone": 1,
-                    "time": [
-                        35,
-                        40,
-                        45,
-                        50
-                    ]
+                    "zone": 1
                 },
                 {
                     "step": 3,
-                    "zone": 4,
-                    "time": [
-                        35,
-                        40,
-                        45,
-                        50
-                    ]
+                    "zone": 4
                 },
                 {
                     "step": 4,
-                    "zone": 2,
-                    "time": [
-                        35,
-                        40,
-                        45,
-                        50
-                    ]
+                    "zone": 2
                 },
                 {
                     "step": 5,
-                    "zone": 5,
-                    "time": [
-                        35,
-                        40,
-                        45,
-                        50
-                    ]
+                    "zone": 5
                 }
             ]
         }
