@@ -35,6 +35,7 @@ class Program(ProgramWithEvents):
         if self._step > len(self._p["steps"]):
             self.complete()
         else:
+            run = False
             for step in self._p["steps"]:
                 if step["step"] == self._step:
                     zone = step["zone"]
@@ -54,8 +55,10 @@ class Program(ProgramWithEvents):
                             r.set_run_time(int(t))
                             r.on()
                         else:
-                            self.run_step()
+                            run = True
         self._step += 1
+        if run:
+            self.run_step()
 
     def det_run_time(self, h):
         date = dt.datetime.today()
