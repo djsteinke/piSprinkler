@@ -78,4 +78,4 @@ class Program(object):
         per_temp = 1
         if average_temps[month] > 0:
             per_temp = get_f_from_c(avg_temp)/average_temps[month]
-        return watering_times[h][month]*per_temp
+        return watering_times[h][month]*per_temp*60
