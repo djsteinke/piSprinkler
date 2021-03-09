@@ -56,9 +56,9 @@ class Program(ProgramWithEvents):
                             r.on()
                         else:
                             run = True
-        self._step += 1
-        if run:
-            self.run_step()
+            self._step += 1
+            if run:
+                self.run_step()
 
     def det_run_time(self, h):
         date = dt.datetime.today()
