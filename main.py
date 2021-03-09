@@ -99,6 +99,9 @@ def setup_cmd(action):
     if action == "load":
         s.load()
         s.save()
+    return jsonify(message="Success",
+                   statusCode=200,
+                   data=action), 200
 
 
 @app.route('/getTemp')
