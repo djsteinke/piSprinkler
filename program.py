@@ -16,16 +16,16 @@ class Program(object):
         self._step = 1
 
     def start(self):
-        module_logger.debug("Program.start()")
+        module_logger.debug("start()")
         self.run_step()
 
     def run_step(self):
         if self._step > len(self._p["steps"]):
-            module_logger.debug("Program.complete()")
+            module_logger.debug("complete()")
             if self._callback is not None:
                 self._callback()
         else:
-            module_logger.debug(f"run_step() {self._step} of {len(self._z)}")
+            log_msg = f"run_step() [{self._step} of {len(self._z)}]"
             run = False
             for step in self._p["steps"]:
                 if step["step"] == self._step:
@@ -40,13 +40,13 @@ class Program(object):
                     if pin > 0:
                         r = Relay(pin, self.run_step)
                         t = self.det_run_time(head)
-                        print(f"zone[{zone}] head[{head}] pin[{pin}] time[{t}]")
-                        module_logger.debug(f"zone[{zone}] head[{head}] pin[{pin}] time[{t:.1f}]")
+                        log_msg += f" zone[{zone}] head[{head}] pin[{pin}] time[{t:.1f}]"
                         if t > 0:
                             r.set_run_time(int(t))
                             r.on()
                         else:
                             run = True
+            module_logger.debug(log_msg)
             self._step += 1
             if run:
                 self.run_step()
