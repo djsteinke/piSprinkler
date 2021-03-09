@@ -48,6 +48,9 @@ def check():
     next_date = parser.parse(s.setup["nextRunTime"])
     logger.debug(f"check() now[{dt.datetime.now()}] next[{next_date}]")
     if next_date < dt.datetime.now():
+        logger.debug(f"program: {json.dumps(s.setup['programs'][0])}")
+        logger.debug(f"zones: {json.dumps(s.setup['zones'])}")
+        logger.debug(f"temp hist: {json.dumps(t.hist)}")
         p = Program(s.setup["programs"][0], s.setup["zones"], t.hist)
         p.start()
         start_time = parser.parse(s.setup["startTime"])
