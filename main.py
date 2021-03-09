@@ -42,13 +42,16 @@ GPIO.setwarnings(False)
 
 t = Temperature()
 s = Setup()
+p_running = False
 
 
 def check():
+    global p_running
     next_date = parser.parse(s.setup["nextRunTime"])
     logger.debug(f"check() now[{dt.datetime.now()}] next[{next_date}]")
     if next_date < dt.datetime.now():
-        p = Program(s.setup["programs"][0], s.setup["zones"], t.hist, None)
+        p = Program(s.setup["programs"][0], s.setup["zones"], t.hist, program_complete)
+        p_running = True
         p.start()
         start_time = parser.parse(s.setup["startTime"])
         next_date = dt.datetime.now()
@@ -59,6 +62,11 @@ def check():
         s.save()
     timer = threading.Timer(60, check)
     timer.start()
+
+
+def program_complete():
+    global p_running
+    p_running = False
 
 
 def get_temp_str(c):

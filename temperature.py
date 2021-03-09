@@ -1,10 +1,14 @@
 import json
 import datetime as dt
+import logging
+
 from dateutil import parser
 import threading
 
 from static import get_temperature
 from properties import temp_refresh_interval
+
+module_logger = logging.getLogger('main.program')
 
 
 class Temperature(object):
@@ -44,6 +48,7 @@ class Temperature(object):
 
     def add_temp(self):
         c = get_temperature()
+        module_logger.debug(f"add_temp() temp[{c[0]}] humidity[{c[1]}]")
         self._today["temp"].append(c[0])
         self._today["humidity"].append(c[1])
         avg = self.get_today_avg()
