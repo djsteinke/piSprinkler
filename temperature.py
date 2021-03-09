@@ -89,10 +89,10 @@ class Temperature(object):
 
     def save(self):
         f = open("t.json", "w")
-        f.write(json.dumps(self._hist))
+        f.write(json.dumps(self._hist, indent=4))
         f.close()
         f = open("today_t.json", "w")
-        f.write(json.dumps(self._today))
+        f.write(json.dumps(self._today, indent=4))
         f.close()
 
     def load(self):

@@ -55,9 +55,8 @@ def check():
         next_date += dt.timedelta(days=s.setup["interval"])
         next_date = next_date.replace(hour=start_time.hour, minute=start_time.minute, second=0, microsecond=0)
         s.setup["nextRunTime"] = str(next_date)
-        logger.debug(f"next run {next_date}")
+        logger.info(f"next run {next_date}")
         s.save()
-        logger.info(next_date)
     timer = threading.Timer(60, check)
     timer.start()
 
