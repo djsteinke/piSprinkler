@@ -51,7 +51,7 @@ def check():
         next_date = parser.parse(program["nextRunTime"])
         logger.debug(f"check() now[{dt.datetime.now()}] next[{next_date}]")
         if next_date < dt.datetime.now() and not p_running:
-            p = Program(s.setup["programs"][0], s.setup["zones"], t.hist, program_complete)
+            p = Program(s.setup["programs"][0], s.setup, t.hist, program_complete)
             p_running = True
             p.start()
             start_time = parser.parse(program["startTime"])

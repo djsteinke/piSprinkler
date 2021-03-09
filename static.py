@@ -3,12 +3,6 @@ import properties
 import smbus
 import time
 
-average_temps = [32.0, 28.0, 35.1, 49.1, 51.6, 65.6, 75.7, 75.4, 69.3, 43.7, 36.2, 33.7]
-watering_times = [
-    [0, 0, 0, 0, 12, 17, 18, 14, 11, 0, 0, 0],
-    [0, 0, 0, 0, 30, 43, 45, 34, 28, 0, 0, 0]
-]
-
 bus = smbus.SMBus(1)
 config = [0x08, 0x00]
 

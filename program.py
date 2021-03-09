@@ -2,15 +2,15 @@ import logging
 
 from relay import Relay
 import datetime as dt
-from static import watering_times, average_temps, get_f_from_c
+from static import get_f_from_c
 
 module_logger = logging.getLogger('main.program')
 
 
 class Program(object):
-    def __init__(self, p, z, t, callback):
+    def __init__(self, p, s, t, callback):
         self._p = p
-        self._z = z
+        self._s = s
         self._t = t
         self._callback = callback
         self._step = 1
@@ -25,14 +25,14 @@ class Program(object):
             if self._callback is not None:
                 self._callback()
         else:
-            log_msg = f"run_step() [{self._step} of {len(self._z)}]"
+            log_msg = f"run_step() [{self._step} of {len(self._s['zones'])}]"
             run = False
             for step in self._p["steps"]:
                 if step["step"] == self._step:
                     zone = step["zone"]
                     pin = 0
                     head = -1
-                    for z in self._z:
+                    for z in self._s['zones']:
                         if z["zone"] == zone:
                             pin = z["pin"]
                             head = z["type"]
@@ -75,6 +75,6 @@ class Program(object):
         else:
             avg_temp = act_temp/act_cnt
         per_temp = 1
-        if average_temps[month] > 0:
-            per_temp = get_f_from_c(avg_temp)/average_temps[month]
-        return watering_times[h][month]*per_temp*60
+        if self._s['average_temps'][month] > 0:
+            per_temp = get_f_from_c(avg_temp)/self._s['average_temps'][month]
+        return self._s['watering_times'][h][month]*per_temp*60
