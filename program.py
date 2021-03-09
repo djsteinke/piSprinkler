@@ -2,7 +2,7 @@ import logging
 
 from relay import Relay
 import datetime as dt
-from static import watering_times, average_temps
+from static import watering_times, average_temps, get_f_from_c
 
 module_logger = logging.getLogger('main.program')
 
@@ -20,13 +20,12 @@ class Program(object):
         self.run_step()
 
     def run_step(self):
-        print(f"run_step() {self._step} of {len(self._z)}")
-        module_logger.debug(f"run_step() {self._step} of {len(self._z)}")
         if self._step > len(self._p["steps"]):
             module_logger.debug("Program.complete()")
             if self._callback is not None:
                 self._callback()
         else:
+            module_logger.debug(f"run_step() {self._step} of {len(self._z)}")
             run = False
             for step in self._p["steps"]:
                 if step["step"] == self._step:
@@ -42,7 +41,7 @@ class Program(object):
                         r = Relay(pin, self.run_step)
                         t = self.det_run_time(head)
                         print(f"zone[{zone}] head[{head}] pin[{pin}] time[{t}]")
-                        module_logger.debug(f"zone[{zone}] head[{head}] pin[{pin}] time[{t}]")
+                        module_logger.debug(f"zone[{zone}] head[{head}] pin[{pin}] time[{t:.1f}]")
                         if t > 0:
                             r.set_run_time(int(t))
                             r.on()
@@ -72,12 +71,11 @@ class Program(object):
                 act_cnt += 1
                 break
         if act_cnt == 0:
+            module_logger.debug("det_run_time() temp history not found.")
             return 0
         else:
             avg_temp = act_temp/act_cnt
         per_temp = 1
         if average_temps[month] > 0:
-            per_temp = avg_temp/average_temps[month]
-        print(f"{avg_temp} {average_temps[month]} {watering_times[h][month]}")
-        module_logger.debug(f"{avg_temp} {average_temps[month]} {watering_times[h][month]}")
+            per_temp = get_f_from_c(avg_temp)/average_temps[month]
         return watering_times[h][month]*per_temp

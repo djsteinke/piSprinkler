@@ -17,6 +17,10 @@ bus = smbus.SMBus(1)
 config = [0x08, 0x00]
 
 
+def get_f_from_c(c):
+    return c*1.8+32
+
+
 def get_logging_level():
     if properties.log_debug:
         return logging.DEBUG
