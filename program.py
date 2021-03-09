@@ -1,6 +1,10 @@
+import logging
+
 from relay import Relay
 import datetime as dt
 from static import watering_times, average_temps
+
+module_logger = logging.getLogger('main.program')
 
 
 class ProgramWithEvents(object):
@@ -22,6 +26,7 @@ class Program(ProgramWithEvents):
         self._step = 1
 
     def start(self):
+        module_logger.debug("Program.start()")
         self.run_step()
 
     def run_step(self):
