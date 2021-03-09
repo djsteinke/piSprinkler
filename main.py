@@ -48,7 +48,7 @@ def check():
     next_date = parser.parse(s.setup["nextRunTime"])
     logger.debug(f"check() now[{dt.datetime.now()}] next[{next_date}]")
     if next_date < dt.datetime.now():
-        p = Program(s.setup["programs"][0], s.setup["zones"], t.hist)
+        p = Program(s.setup["programs"][0], s.setup["zones"], t.hist, None)
         p.start()
         start_time = parser.parse(s.setup["startTime"])
         next_date = dt.datetime.now()
