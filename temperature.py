@@ -32,7 +32,7 @@ class Temperature(object):
             t_tot += t
             t_cnt += 1
         if t_cnt > 0:
-            avg[0] = t_tot/t_cnt
+            avg[0] = round(t_tot/t_cnt, 2)
         else:
             avg[0] = 0
         h_tot = 0
@@ -41,7 +41,7 @@ class Temperature(object):
             h_tot += h
             h_cnt += 1
         if h_cnt > 0:
-            avg[1] = h_tot/h_cnt
+            avg[1] = round(h_tot/h_cnt, 1)
         else:
             avg[1] = 0
         return avg
