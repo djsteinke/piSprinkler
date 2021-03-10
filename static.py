@@ -33,5 +33,5 @@ def get_temperature():
     temp_c = ((temp_raw*200) / 1048576) - 50
     humid_raw = ((data[1] << 16) | (data[2] << 8) | data[3]) >> 4
     humid = humid_raw * 100 / 1048576
-    return [temp_c, humid]
+    return [round(temp_c, 2), round(humid, 1)]
 
