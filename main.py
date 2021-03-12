@@ -99,6 +99,16 @@ def get_setup():
     return json.dumps({"setup": s.setup}), 200
 
 
+@app.route('/update/<setup_type>', methods=['POST'])
+def update(setup_type):
+    if setup_type == "zones":
+        z = request.json
+        s.setup["zones"] = z
+    return jsonify(message="Success",
+                   statusCode=200,
+                   data=setup_type), 200
+
+
 @app.route("/setup/<action>")
 def setup_cmd(action):
     if action == "load":
