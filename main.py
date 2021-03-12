@@ -94,6 +94,11 @@ def relay_action(pin_in):
                    data=action), 200
 
 
+@app.route('/getSetup')
+def get_setup():
+    return json.dumps({"setup": s.setup}), 200
+
+
 @app.route("/setup/<action>")
 def setup_cmd(action):
     if action == "load":
