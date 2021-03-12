@@ -105,7 +105,10 @@ def update(setup_type):
         z = request.json
         s.setup["zones"] = z
         s.save()
-
+    elif setup_type == "programs":
+        p = request.json
+        s.setup["programs"] = p
+        s.save()
     return jsonify(message="Success",
                    statusCode=200,
                    data=setup_type), 200
