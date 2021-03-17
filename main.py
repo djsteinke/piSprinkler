@@ -105,6 +105,7 @@ def update(setup_type):
         z = request.json
         s.setup["zones"] = z
         s.save()
+        logger.debug("update zones \n" + json.dumps(s.setup["zones"]))
     elif setup_type == "programs":
         p = request.json
         s.setup["programs"] = p
