@@ -30,8 +30,8 @@ class Program(object):
             for step in self._p["steps"]:
                 if step["step"] == self._step:
                     zone = step["zone"]
-                    pin = 0
-                    head = -1
+                    pin = step["pin"]
+                    head = step["type"]
                     for z in self._s['zones']:
                         if z["zone"] == zone:
                             pin = z["pin"]
@@ -39,7 +39,10 @@ class Program(object):
                             break
                     if pin > 0:
                         r = Relay(pin, self.run_step)
-                        t = self.det_run_time(head)
+                        if step["time"] > 0:
+                            t = step["time"]*60
+                        else:
+                            t = self.det_run_time(step)
                         log_msg += f" zone[{zone}] head[{head}] pin[{pin}] time[{t:.1f}]"
                         if t > 0:
                             r.set_run_time(int(t))
@@ -51,7 +54,9 @@ class Program(object):
             if run:
                 self.run_step()
 
-    def det_run_time(self, h):
+    def det_run_time(self, step):
+        h = step["type"]
+        p = step["percent"]/100.0
         date = dt.datetime.today()
         month = dt.date.today().month - 1
         date = date.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -77,4 +82,4 @@ class Program(object):
         per_temp = 1
         if self._s['average_temps'][month] > 0:
             per_temp = get_f_from_c(avg_temp)/self._s['average_temps'][month]
-        return self._s['watering_times'][h][month]*per_temp*60
+        return self._s['watering_times'][h][month]*per_temp*60*p
