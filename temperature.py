@@ -52,30 +52,46 @@ class Temperature(object):
         self._today["temp"].append(c[0])
         self._today["humidity"].append(c[1])
         avg = self.get_today_avg()
-        found = False
-        for hist in self._hist["history"]:
-            if hist["date"] == self._today["date"]:
-                hist["temp"] = avg[0]
-                hist["humidity"] = avg[1]
-                found = True
-        if not found:
-            self._hist["history"].append({
-                "date": self._today["date"],
-                "temp": avg[0],
-                "humidity": avg[1]
-            })
         if self._today["temp_max"] == 0 or self._today["temp_max"] < c[0]:
             self._today["temp_max"] = c[0]
-            for hist in self._hist["history"]:
-                if hist["date"] == self._today["date"]:
-                    hist["temp_max"] = c[0]
-                    break
         if self._today["temp_min"] == 0 or self._today["temp_min"] > c[0]:
             self._today["temp_min"] = c[0]
-            for hist in self._hist["history"]:
-                if hist["date"] == self._today["date"]:
-                    hist["temp_min"] = c[0]
-                    break
+        found = False
+        for hist in self._hist["history"]:
+            if hist["dt"] == self._today["date"]:
+                hist["tAvg"] = avg[0]
+                hist["hAvg"] = avg[1]
+                if self._today["temp_max"] == 0 or self._today["temp_max"] < c[0]:
+                    hist["tMax"] = c[0]
+                if self._today["temp_min"] == 0 or self._today["temp_min"] > c[0]:
+                    hist["tMin"] = c[0]
+                run_time = dt.datetime.now()
+                run_time = run_time.replace(microsecond=0)
+                new_temp = {
+                    "time": str(run_time),
+                    "t": c[0],
+                    "h": c[1]
+                }
+                hist['history'].append(new_temp)
+                found = True
+                break
+        if not found:
+            run_time = dt.datetime.now()
+            run_time = run_time.replace(microsecond=0)
+            self._hist["history"].append({
+                "dt": self._today["date"],
+                "tAvg": avg[0],
+                "hAvg": avg[1],
+                "tMax": c[0],
+                "tMin": c[0],
+                "history": [
+                    {
+                        "time": str(run_time),
+                        "t": c[0],
+                        "h": c[1]
+                    }
+                ]
+            })
         self.save()
 
     def reset_today(self):
@@ -113,7 +129,7 @@ class Temperature(object):
             self.save()
 
     def start(self):
-        timer = threading.Timer(300, self.record)
+        timer = threading.Timer(10, self.record)
         timer.start()
 
     def record(self):
