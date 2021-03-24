@@ -13,20 +13,20 @@ class Program(object):
         self._s = s
         self._t = t
         self._callback = callback
-        self._step = 1
+        self._step = 0
 
     def start(self):
         module_logger.debug("start()")
         self.run_step()
 
     def run_step(self):
-        if self._step > len(self._p["steps"]):
+        if self._step >= len(self._p["steps"]):
             module_logger.debug("complete()")
             if self._callback is not None:
                 self._callback()
         else:
-            log_msg = f"run_step() [{self._step} of {len(self._s['zones'])}]"
-            run = False
+            log_msg = f"run_step() [{self._step+1} of {len(self._s['zones'])}]"
+            run = True
             for step in self._p["steps"]:
                 if step["step"] == self._step:
                     head = -1
@@ -45,6 +45,7 @@ class Program(object):
                             t = self.det_run_time(step["percent"]/100.0, head)
                         log_msg += f" zone[{zone}] head[{head}] pin[{pin}] time[{t:.1f}]"
                         if t > 0:
+                            run = False
                             r.set_run_time(int(t))
                             r.on()
                         else:
