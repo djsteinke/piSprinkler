@@ -125,20 +125,33 @@ def setup_cmd(action):
                    data=action), 200
 
 
-@app.route('/getTemp')
-def get_temp():
-    cond = get_temperature()
-    cond_avg = t.get_today_avg()
-    cond_max = t.get_today_max()
-    ret = {
-        "temp": cond[0],
-        "humidity": cond[1],
-        "avg_temp": cond_avg[0],
-        "avg_humidity": cond_avg[1],
-        "temp_max": cond_max[0],
-        "temp_min": cond_max[1]
-    }
-    return ret, 200
+@app.route('/getTemp', defaults={'days': 0})
+@app.route('/getTemp/<days>')
+def get_temp(days):
+    if days == 0:
+        cond = get_temperature()
+        cond_avg = t.get_today_avg()
+        cond_max = t.get_today_max()
+        return {
+            "temp": cond[0],
+            "humidity": cond[1],
+            "avg_temp": cond_avg[0],
+            "avg_humidity": cond_avg[1],
+            "temp_max": cond_max[0],
+            "temp_min": cond_max[1]
+        }, 200
+    else:
+        today = dt.date.today()
+        i = 0
+        ret = {"history": []}
+        while i < int(days):
+            for hist in t.hist['history']:
+                if hist['dt'] == str(today):
+                    ret['history'].append(hist)
+                    break
+            i += 1
+            today -= dt.timedelta(days=1)
+        return ret, 200
 
 
 @app.route('/getTempStr')
