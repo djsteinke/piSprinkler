@@ -46,12 +46,14 @@ class Temperature(object):
             avg[1] = 0
         return avg
 
-    def add_temp(self):
+    def add_temp(self, add):
         c = get_temperature()
-        module_logger.debug(f"add_temp() temp[{c[0]}] humidity[{c[1]}]")
-        self._today["temp"].append(c[0])
-        self._today["humidity"].append(c[1])
-        avg = self.get_today_avg()
+        avg = (0, 0)
+        if add:
+            module_logger.debug(f"add_temp() temp[{c[0]}] humidity[{c[1]}]")
+            self._today["temp"].append(c[0])
+            self._today["humidity"].append(c[1])
+            avg = self.get_today_avg()
         if self._today["temp_max"] == 0 or self._today["temp_max"] < c[0]:
             self._today["temp_max"] = c[0]
         if self._today["temp_min"] == 0 or self._today["temp_min"] > c[0]:
@@ -59,39 +61,41 @@ class Temperature(object):
         found = False
         for hist in self._hist["history"]:
             if hist["dt"] == self._today["date"]:
-                hist['tAvg'] = avg[0]
-                hist['hAvg'] = avg[1]
                 if hist['tMax'] < c[0]:
                     hist['tMax'] = c[0]
                 if hist['tMin'] > c[0]:
                     hist['tMin'] = c[0]
-                run_time = dt.datetime.now()
-                run_time = run_time.replace(microsecond=0)
-                new_temp = {
-                    "time": str(run_time),
-                    "t": c[0],
-                    "h": c[1]
-                }
-                hist['history'].append(new_temp)
+                if add:
+                    hist['tAvg'] = avg[0]
+                    hist['hAvg'] = avg[1]
+                    run_time = dt.datetime.now()
+                    run_time = run_time.replace(microsecond=0)
+                    new_temp = {
+                        "time": str(run_time),
+                        "t": c[0],
+                        "h": c[1]
+                    }
+                    hist['history'].append(new_temp)
                 found = True
                 break
         if not found:
             run_time = dt.datetime.now()
             run_time = run_time.replace(microsecond=0)
-            self._hist["history"].append({
+            new_entry = {
                 "dt": self._today["date"],
                 "tAvg": avg[0],
                 "hAvg": avg[1],
                 "tMax": c[0],
                 "tMin": c[0],
-                "history": [
-                    {
+                "history": []
+            }
+            if add:
+                new_entry['history'].append({
                         "time": str(run_time),
                         "t": c[0],
                         "h": c[1]
-                    }
-                ]
-            })
+                    })
+            self._hist["history"].append(new_entry)
         self.save()
 
     def reset_today(self):
@@ -116,6 +120,14 @@ class Temperature(object):
         f.write(json.dumps(self._today, indent=4))
         f.close()
 
+    def check_temp(self):
+        if dt.date.today() != self._date:
+            self.reset_today()
+            self._date = dt.date.today()
+        self.add_temp(False)
+        timer = threading.Timer(60, self.check_temp)
+        timer.start()
+
     def load(self):
         try:
             tmp = open("t.json", "r")
@@ -136,7 +148,7 @@ class Temperature(object):
         if dt.date.today() != self._date:
             self.reset_today()
             self._date = dt.date.today()
-        self.add_temp()
+        self.add_temp(True)
         timer = threading.Timer(temp_refresh_interval, self.record)
         timer.start()
 
