@@ -59,12 +59,12 @@ class Temperature(object):
         found = False
         for hist in self._hist["history"]:
             if hist["dt"] == self._today["date"]:
-                hist["tAvg"] = avg[0]
-                hist["hAvg"] = avg[1]
-                if self._today["temp_max"] == 0 or self._today["temp_max"] < c[0]:
-                    hist["tMax"] = c[0]
-                if self._today["temp_min"] == 0 or self._today["temp_min"] > c[0]:
-                    hist["tMin"] = c[0]
+                hist['tAvg'] = avg[0]
+                hist['hAvg'] = avg[1]
+                if hist['tMax'] < c[0]:
+                    hist['tMax'] = c[0]
+                if hist['tMin'] > c[0]:
+                    hist['tMin'] = c[0]
                 run_time = dt.datetime.now()
                 run_time = run_time.replace(microsecond=0)
                 new_temp = {
