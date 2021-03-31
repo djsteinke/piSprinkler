@@ -129,7 +129,7 @@ class Temperature(object):
             self.save()
 
     def start(self):
-        timer = threading.Timer(300, self.record)
+        timer = threading.Timer(60, self.record)
         timer.start()
 
     def record(self):
