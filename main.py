@@ -96,7 +96,9 @@ def relay_action(pin_in):
 
 @app.route('/getSetup')
 def get_setup():
-    return json.dumps({"setup": s.setup}), 200
+    return {"type": "setup",
+            "response": {
+                "setup": s.setup}}, 200
 
 
 @app.route('/update/<setup_type>', methods=['POST'])
@@ -133,21 +135,25 @@ def get_temp(days):
         cond_avg = t.get_today_avg()
         cond_max = t.get_today_max()
         return {
-            "temp": cond[0],
-            "humidity": cond[1],
-            "avg_temp": cond_avg[0],
-            "avg_humidity": cond_avg[1],
-            "temp_max": cond_max[0],
-            "temp_min": cond_max[1]
+            "type": "temp",
+            "response": {
+                "temp": cond[0],
+                "humidity": cond[1],
+                "avg_temp": cond_avg[0],
+                "avg_humidity": cond_avg[1],
+                "temp_max": cond_max[0],
+                "temp_min": cond_max[1]
+            }
         }, 200
     else:
         today = dt.date.today()
         i = 0
-        ret = {"history": []}
+        ret = {"type": "history",
+               "response": {"history": []}}
         while i < int(days):
             for hist in t.hist['history']:
                 if hist['dt'] == str(today):
-                    ret['history'].append(hist)
+                    ret['response']['history'].append(hist)
                     break
             i += 1
             today -= dt.timedelta(days=1)
