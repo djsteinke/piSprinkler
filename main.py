@@ -8,7 +8,7 @@ from dateutil import parser
 import RPi.GPIO as GPIO
 
 from flask import Flask, request, jsonify, send_from_directory
-
+from properties import port
 from program import Program
 from temperature import Temperature
 from setup import Setup
@@ -192,4 +192,4 @@ if __name__ == '__main__':
     check()
     t.start()
     # app.run(ssl_context='adhoc', host=host_name, port=1983)
-    app.run(host=host_name, port=1983)
+    app.run(host=host_name, port=port)
