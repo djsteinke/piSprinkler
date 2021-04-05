@@ -27,22 +27,22 @@ class Program(object):
         else:
             log_msg = f"run_step() [{self._step+1} of {len(self._s['zones'])}]"
             run = True
-            for step in self._p["steps"]:
-                if step["step"] == self._step:
+            for step in self._p['steps']:
+                if step['step'] == self._step:
                     head = -1
                     pin = 0
-                    zone = step["zone"]
+                    zone = step['zone']
                     for z in self._s['zones']:
-                        if z["zone"] == zone:
-                            pin = z["pin"]
-                            head = z["type"]
+                        if z['zone'] == zone:
+                            pin = z['pin']
+                            head = z['type']
                             break
                     if pin > 0 and head >= 0:
                         r = Relay(pin, self.run_step)
-                        if step["time"] > 0:
-                            t = step["time"]*60
+                        if step['time'] > 0:
+                            t = step['time']*60
                         else:
-                            t = self.det_run_time(step["percent"]/100.0, head)
+                            t = self.det_run_time(step['percent']/100.0, head)
                         log_msg += f" zone[{zone}] head[{head}] pin[{pin}] time[{t:.1f}]"
                         if t > 0:
                             run = False
