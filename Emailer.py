@@ -25,4 +25,4 @@ class Emailer:
 
         # Send Email & Exit
         session.sendmail(GMAIL_USERNAME, recipient, headers + "\r\n\r\n" + content)
-        session.quit
+        session.quit()

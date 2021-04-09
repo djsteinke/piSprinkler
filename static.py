@@ -1,10 +1,13 @@
 import logging
+import os
+
 import properties
 import smbus
 import time
 
 bus = smbus.SMBus(1)
 config = [0x08, 0x00]
+fdir = os.path.abspath('/home/pi/projects/piSprinkler')
 
 
 def get_f_from_c(c):

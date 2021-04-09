@@ -1,14 +1,18 @@
 import json
 import datetime as dt
 import logging
+import os
 
 from dateutil import parser
 import threading
 
-from static import get_temperature
+from static import get_temperature, fdir
 from properties import temp_refresh_interval
 
 module_logger = logging.getLogger('main.program')
+
+f_t = os.path.join(fdir, 't.json')
+f_today = os.path.join(fdir, 'today_t.json')
 
 
 class Temperature(object):
@@ -113,10 +117,11 @@ class Temperature(object):
         return [self._today["temp_max"], self._today["temp_min"]]
 
     def save(self):
-        f = open("t.json", "w")
+        global f_t, f_today
+        f = open(f_t, "w")
         f.write(json.dumps(self._hist, indent=4))
         f.close()
-        f = open("today_t.json", "w")
+        f = open(f_today, "w")
         f.write(json.dumps(self._today, indent=4))
         f.close()
 
@@ -129,11 +134,12 @@ class Temperature(object):
         timer.start()
 
     def load(self):
+        global f_t, f_today
         try:
-            tmp = open("t.json", "r")
+            tmp = open(f_t, "r")
             self._hist = json.loads(tmp.read())
             tmp.close()
-            td = open("today_t.json", "r")
+            td = open(f_today, "r")
             self._today = json.loads(td.read())
             td.close()
             self._date = parser.parse(self._today["date"]).date()

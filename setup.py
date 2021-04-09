@@ -1,4 +1,7 @@
 import json
+import os
+
+from static import fdir
 
 setup_msg = {
     "average_temps": [32.0, 28.0, 35.1, 49.1, 51.6, 65.6, 75.7, 75.4, 69.3, 43.7, 36.2, 33.7],
@@ -64,26 +67,31 @@ setup_msg = {
     ]
 }
 
+f_setup = os.path.join(fdir, 'setup.json')
+
 
 class Setup(object):
     def __init__(self):
         global setup_msg
+        global f_setup
         self._setup = setup_msg
         try:
-            f = open("setup.json", "r")
+            f = open(f_setup, "r")
             self._setup = json.loads(f.read())
             f.close()
         except FileNotFoundError:
             self.save()
 
     def save(self):
-        f = open("setup.json", "w")
+        global f_setup
+        f = open(f_setup, "w")
         f.write(json.dumps(self._setup, indent=4))
         f.close()
 
     def load(self):
+        global f_setup
         try:
-            f = open("setup.json", "r")
+            f = open(f_setup, "r")
             self._setup = json.loads(f.read())
             f.close()
         except FileNotFoundError:
