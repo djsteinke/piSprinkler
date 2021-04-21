@@ -9,60 +9,13 @@ setup_msg = {
         [0, 0, 0, 0, 12, 17, 18, 14, 11, 0, 0, 0],
         [0, 0, 0, 0, 30, 43, 45, 34, 28, 0, 0, 0]
     ],
-    "zones": [
-        {
-            "zone": 1,
-            "type": 1,
-            "pin": 1
-        },
-        {
-            "zone": 2,
-            "type": 1,
-            "pin": 1
-        },
-        {
-            "zone": 3,
-            "type": 1,
-            "pin": 1
-        },
-        {
-            "zone": 4,
-            "type": 0,
-            "pin": 1
-        },
-        {
-            "zone": 5,
-            "type": 1,
-            "pin": 1
-        }
-    ],
+    "zones": [],
     "programs": [
         {
             "nextRunTime": "2020-01-01 06:30:00",
             "startTime": "2000-01-01 06:30:00",
             "interval": 1,
-            "steps": [
-                {
-                    "step": 1,
-                    "zone": 3
-                },
-                {
-                    "step": 2,
-                    "zone": 1
-                },
-                {
-                    "step": 3,
-                    "zone": 4
-                },
-                {
-                    "step": 4,
-                    "zone": 2
-                },
-                {
-                    "step": 5,
-                    "zone": 5
-                }
-            ]
+            "steps": []
         }
     ]
 }
