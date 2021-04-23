@@ -51,11 +51,15 @@ def check():
     global p_running
     for program in s.setup['programs']:
         next_date = parser.parse(program["nextRunTime"])
-        logger.debug(f"check() now[{dt.datetime.now()}] next[{next_date}]")
+        active = "ACTIVE"
+        if not program['active']:
+            active = "INACTIVE"
+        logger.debug(f"check({program['name']}) {active} now[{dt.datetime.now()}] next[{next_date}]")
         if next_date < dt.datetime.now() and not p_running:
             p = Program(s.setup["programs"][0], s.setup, t.hist, program_complete)
-            p_running = True
-            p.start()
+            if program['active']:
+                p_running = True
+                p.start()
             start_time = parser.parse(program["startTime"])
             next_date = dt.datetime.now()
             next_date += dt.timedelta(days=program["interval"])

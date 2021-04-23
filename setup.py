@@ -13,9 +13,11 @@ setup_msg = {
     "zones": [],
     "programs": [
         {
+            "name": "value",
             "nextRunTime": "2020-01-01 06:30:00",
             "startTime": "2000-01-01 06:30:00",
             "interval": 1,
+            "active": True,
             "steps": []
         }
     ]
