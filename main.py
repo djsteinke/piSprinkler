@@ -89,6 +89,7 @@ def run_program(name):
     global p_running, s, t
     for program in s.setup['programs']:
         if program['name'] == name:
+            logger.debug(f"runProgram({name})")
             p = Program(program, s.setup, t.hist, program_complete)
             p.start()
     return jsonify(message="Success",
