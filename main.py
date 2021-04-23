@@ -56,7 +56,7 @@ def check():
             active = "INACTIVE"
         logger.debug(f"check({program['name']}) {active} now[{dt.datetime.now()}] next[{next_date}]")
         if next_date < dt.datetime.now() and not p_running:
-            p = Program(s.setup["programs"][0], s.setup, t.hist, program_complete)
+            p = Program(program, s.setup, t.hist, program_complete)
             if program['active']:
                 p_running = True
                 p.start()
@@ -82,6 +82,15 @@ def get_temp_str(c):
 
 def get_f(c):
     return c*1.8+32
+
+
+@app.route('/runProgram/<name>')
+def run_program(name):
+    global p_running, s, t
+    for program in s.setup['programs']:
+        if program['name'] == name:
+            p = Program(program, s.setup, t.hist, program_complete)
+            p.start()
 
 
 @app.route('/relay/<pin_in>')
