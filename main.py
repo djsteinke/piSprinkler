@@ -91,6 +91,9 @@ def run_program(name):
         if program['name'] == name:
             p = Program(program, s.setup, t.hist, program_complete)
             p.start()
+    return jsonify(message="Success",
+                   statusCode=200,
+                   data=name), 200
 
 
 @app.route('/relay/<pin_in>')
