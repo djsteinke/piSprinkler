@@ -11,6 +11,7 @@ class Relay(object):
         self._on = False
         self._pin = pin
         self._run_time = 0
+        self._wait = 0
         self._callback = callback
         GPIO.setup(self._pin, GPIO.OUT)
         if GPIO.input(self._pin) == 0:
@@ -36,6 +37,9 @@ class Relay(object):
     def set_run_time(self, run_time):
         self._run_time = run_time
 
+    def set_wait(self, wait):
+        self._wait = wait
+
     def on(self):
         # TODO turn on
         self._on = True
@@ -49,7 +53,8 @@ class Relay(object):
         self._on = False
         GPIO.output(self._pin, self._gpio_off)
         if self._callback is not None:
-            self._callback()
+            timer = threading.Timer(self._wait, self._callback)
+            timer.start()
 
     def get_pin(self):
         return str(self._pin)

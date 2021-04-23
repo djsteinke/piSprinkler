@@ -47,6 +47,7 @@ class Program(object):
                         if t > 0:
                             run = False
                             r.set_run_time(int(t))
+                            r.set_wait(step['wait']*60)
                             r.on()
                         else:
                             run = True
