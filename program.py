@@ -25,7 +25,7 @@ class Program(object):
             if self._callback is not None:
                 self._callback()
         else:
-            log_msg = f"run_step() [{self._step+1} of {len(self._s['zones'])}]"
+            log_msg = f"run_step() [{self._step+1} of {len(self._p['steps'])}]"
             run = True
             for step in self._p['steps']:
                 if step['step'] == self._step:
