@@ -119,10 +119,10 @@ class Temperature(object):
     def save(self):
         global f_t, f_today
         f = open(f_t, "w")
-        f.write(json.dumps(self._hist, indent=4))
+        f.write(json.dumps(self._hist))
         f.close()
         f = open(f_today, "w")
-        f.write(json.dumps(self._today, indent=4))
+        f.write(json.dumps(self._today))
         f.close()
 
     def check_temp(self):
