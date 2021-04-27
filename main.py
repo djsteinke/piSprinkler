@@ -164,21 +164,31 @@ def setup_cmd(action):
 @app.route('/getTemp', defaults={'days': 0})
 @app.route('/getTemp/<days>')
 def get_temp(days):
+    global p
     if days == 0:
         cond = get_temperature()
         cond_avg = t.get_today_avg()
         cond_max = t.get_today_max()
-        return {
-                   "type": "temp",
-                   "response": {
-                       "temp": cond[0],
-                       "humidity": cond[1],
-                       "avg_temp": cond_avg[0],
-                       "avg_humidity": cond_avg[1],
-                       "temp_max": cond_max[0],
-                       "temp_min": cond_max[1]
-                   }
-               }, 200
+        ret = {"type": "temp",
+               "response": {
+                   "temp": cond[0],
+                   "humidity": cond[1],
+                   "avg_temp": cond_avg[0],
+                   "avg_humidity": cond_avg[1],
+                   "temp_max": cond_max[0],
+                   "temp_min": cond_max[1],
+                   "program": {"name": None,
+                               "step": None,
+                               "time": None,
+                               "runTime": None}
+               }
+               }
+        if p.p is not None:
+            ret['response']['program']['name'] = p.p['name']
+            ret['response']['program']['step'] = p.step
+            ret['response']['program']['time'] = p.time
+            ret['response']['program']['runTime'] = p.run_time
+        return ret, 200
     else:
         today = dt.date.today()
         i = 0
