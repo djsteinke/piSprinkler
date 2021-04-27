@@ -116,13 +116,16 @@ def relay_action(pin_in):
 
 @app.route('/getProgramStatus')
 def get_program_status():
-    ret = 'Not running.'
+    ret = {"name": None,
+           "step": None,
+           "time": None,
+           "runTime": None}
     if p.p is not None:
-        ret = f'{p.p["name"]} Step[{p.step}] {p.time} of {p.run_time}'
-    return {"type": "status",
-            "response": {
-                "status": ret
-            }}, 200
+        ret['name'] = p.p['name']
+        ret['step'] = p.step
+        ret['time'] = p.time
+        ret['runTime'] = p.run_time
+    return ret, 200
 
 
 @app.route('/getSetup')
