@@ -183,7 +183,7 @@ def get_temp(days):
                                "runTime": None}
                }
                }
-        if p.p is not None:
+        if p.p is not None and p.running:
             ret['response']['program']['name'] = p.p['name']
             ret['response']['program']['step'] = p.step
             ret['response']['program']['time'] = p.time

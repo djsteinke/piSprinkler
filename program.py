@@ -120,3 +120,7 @@ class Program(object):
     @property
     def run_time(self):
         return self._run_time
+
+    @property
+    def running(self):
+        return self._running
