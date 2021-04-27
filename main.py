@@ -219,7 +219,7 @@ if __name__ == '__main__':
     host_name = socket.gethostbyname(socket.gethostname())
     try:
         stream = os.popen('hostname -I')
-        host_name = stream.read()
+        host_name = stream.read().strip()
     except all:
         host_name = ip
     logger.info("machine host_name[" + host_name + "]")
