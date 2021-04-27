@@ -10,7 +10,7 @@ import RPi.GPIO as GPIO
 from flask import Flask, request, jsonify, send_from_directory
 
 from Emailer import Emailer
-from properties import port, TEXT_EMAIL
+from properties import port, TEXT_EMAIL, ip
 from program import Program
 from temperature import Temperature
 from setup import Setup
@@ -82,7 +82,7 @@ def get_temp_str(c):
 
 
 def get_f(c):
-    return c*1.8+32
+    return c * 1.8 + 32
 
 
 @app.route('/runProgram/<name>')
@@ -105,9 +105,9 @@ def relay_action(pin_in):
     # relay.set_pin(int(pin_in))
     action = "on"
     # if action == "on":
-     #    relay.on()
+    #    relay.on()
     # else:
-      #  relay.off()
+    #  relay.off()
     # pin_state = GPIO.input(pin)
     return jsonify(message="Success",
                    statusCode=200,
@@ -166,16 +166,16 @@ def get_temp(days):
         cond_avg = t.get_today_avg()
         cond_max = t.get_today_max()
         return {
-            "type": "temp",
-            "response": {
-                "temp": cond[0],
-                "humidity": cond[1],
-                "avg_temp": cond_avg[0],
-                "avg_humidity": cond_avg[1],
-                "temp_max": cond_max[0],
-                "temp_min": cond_max[1]
-            }
-        }, 200
+                   "type": "temp",
+                   "response": {
+                       "temp": cond[0],
+                       "humidity": cond[1],
+                       "avg_temp": cond_avg[0],
+                       "avg_humidity": cond_avg[1],
+                       "temp_max": cond_max[0],
+                       "temp_min": cond_max[1]
+                   }
+               }, 200
     else:
         today = dt.date.today()
         i = 0
@@ -217,17 +217,12 @@ def favicon():
 
 if __name__ == '__main__':
     host_name = socket.gethostbyname(socket.gethostname())
+    try:
+        stream = os.popen('hostname -I')
+        host_name = stream.read()
+    except all:
+        host_name = ip
     logger.info("machine host_name[" + host_name + "]")
-    print(host_name + "[" + host_name[0: 3] + "]")
-    if host_name[0: 3] == "127":
-        host_name = "192.168.0.152"
-    elif host_name[0: 3] == "192":
-        val = 1
-    else:
-        host_name = "localhost"
-    logger.info("app host_name[" + host_name + "]")
-    # s.load()
     check()
     t.start()
-    # app.run(ssl_context='adhoc', host=host_name, port=1983)
     app.run(host=host_name, port=port)
