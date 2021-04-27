@@ -44,11 +44,12 @@ GPIO.setwarnings(False)
 
 t = Temperature()
 s = Setup()
+p = Program(None, None, None, None)
 p_running = False
 
 
 def check():
-    global p_running
+    global p_running, p
     for program in s.setup['programs']:
         next_date = parser.parse(program["nextRunTime"])
         active = "ACTIVE"
@@ -86,7 +87,7 @@ def get_f(c):
 
 @app.route('/runProgram/<name>')
 def run_program(name):
-    global p_running, s, t
+    global p_running, s, t, p
     for program in s.setup['programs']:
         if program['name'] == name:
             logger.debug(f"runProgram({name})")
@@ -111,6 +112,17 @@ def relay_action(pin_in):
     return jsonify(message="Success",
                    statusCode=200,
                    data=action), 200
+
+
+@app.route('/getProgramStatus')
+def get_program_status():
+    ret = 'Not running.'
+    if p.p is not None:
+        ret = f'{p.p["name"]} Step[{p.step}] {p.time} of {p.run_time}'
+    return {"type": "status",
+            "response": {
+                "status": ret
+            }}, 200
 
 
 @app.route('/getSetup')

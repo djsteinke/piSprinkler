@@ -1,4 +1,5 @@
 import logging
+import threading
 
 from relay import Relay
 import datetime as dt
@@ -14,12 +15,18 @@ class Program(object):
         self._t = t
         self._callback = callback
         self._step = 0
+        self._run_time = 0.0
+        self._time = 0.0
+        self._running = False
 
     def start(self):
         module_logger.debug("start()")
         self.run_step()
 
     def run_step(self):
+        self._running = False
+        self._time = 0
+        self._run_time = 0
         if self._step >= len(self._p["steps"]):
             module_logger.debug("complete()")
             if self._callback is not None:
@@ -43,18 +50,30 @@ class Program(object):
                             t = step['time']*60
                         else:
                             t = self.det_run_time(step['percent']/100.0, head)
+                            t = t*12.0/(28.0/self._p['interval'])
                         log_msg += f" zone[{zone}] head[{head}] pin[{pin}] time[{t:.1f}]"
                         if t > 0:
+                            self._running = True
                             run = False
+                            self._time = 0
+                            self._run_time = t
                             r.set_run_time(int(t))
                             r.set_wait(step['wait']*60)
                             r.on()
+                            timer = threading.Timer(60, self.set_run_time)
+                            timer.start()
                         else:
                             run = True
             module_logger.debug(log_msg)
             self._step += 1
             if run:
                 self.run_step()
+
+    def set_run_time(self):
+        if self._running:
+            self._time += 1
+            timer = threading.Timer(60, self.set_run_time)
+            timer.start()
 
     def det_run_time(self, p, h):
         # h = step["type"]
@@ -68,20 +87,36 @@ class Program(object):
         for day in self._t["history"]:
             if day["dt"] == str(date.date()):
                 act_temp += day["tAvg"]
-                act_cnt += 1
+                act_cnt += 1.0
                 break
         date -= dt.timedelta(days=1)
         for day in self._t["history"]:
             if day["dt"] == str(date.date()):
                 act_temp += day["tAvg"]
-                act_cnt += 1
+                act_cnt += 1.0
                 break
         if act_cnt == 0:
             module_logger.debug("det_run_time() temp history not found.")
             return 0
         else:
             avg_temp = act_temp/act_cnt
-        per_temp = 1
+        per_temp = 1.0
         if self._s['average_temps'][month] > 0:
             per_temp = get_f_from_c(avg_temp)/self._s['average_temps'][month]
-        return self._s['watering_times'][h][month]*per_temp*60*p
+        return self._s['watering_times'][h][month]*per_temp*60.0*p
+
+    @property
+    def p(self):
+        return self._p
+
+    @property
+    def step(self):
+        return self._step
+
+    @property
+    def time(self):
+        return self._time
+
+    @property
+    def run_time(self):
+        return self._run_time
