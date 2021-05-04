@@ -161,6 +161,15 @@ def setup_cmd(action):
                    data=action), 200
 
 
+@app.route('/getSensorTemp')
+def get_sensor_temp():
+    cond = get_temperature()
+    ret = {"temp": cond[0],
+           "humidity": cond[1],
+           "temp_f": get_f(cond[0])}
+    return ret, 200
+
+
 @app.route('/getTemp', defaults={'days': 0})
 @app.route('/getTemp/<days>')
 def get_temp(days):
