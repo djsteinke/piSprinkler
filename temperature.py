@@ -9,7 +9,7 @@ import threading
 from static import get_temperature, fdir
 from properties import temp_refresh_interval
 
-module_logger = logging.getLogger('main.program')
+module_logger = logging.getLogger('main.temperature')
 
 f_t = os.path.join(fdir, 't.json')
 f_today = os.path.join(fdir, 'today_t.json')

@@ -1,6 +1,8 @@
 import logging
 import os
 
+from pip._vendor import requests
+
 import properties
 import smbus
 import time
@@ -8,6 +10,12 @@ import time
 bus = smbus.SMBus(1)
 config = [0x08, 0x00]
 fdir = os.path.abspath('/home/pi/projects/piSprinkler')
+
+module_logger = logging.getLogger('main.static')
+
+
+class ExternalSystemError(Exception):
+    pass
 
 
 def get_f_from_c(c):
@@ -25,7 +33,7 @@ def get_logging_level():
         return logging.ERROR
 
 
-def get_temperature():
+def get_sensor_temp():
     bus.write_i2c_block_data(0x38, 0xE1, config)
     byt = bus.read_byte(0x38)
     measure_cmd = [0x33, 0x00]
@@ -37,4 +45,16 @@ def get_temperature():
     humid_raw = ((data[1] << 16) | (data[2] << 8) | data[3]) >> 4
     humid = humid_raw * 100 / 1048576
     return [round(temp_c, 2), round(humid, 1)]
+
+
+def get_temperature():
+    try:
+        x = requests.get('http://192.168.0.140:31000/getTemp')
+        msg = x.json()
+        if msg['humidity'] < 0:
+            raise ExternalSystemError('Sensor not connected.')
+        return [msg['temp'], msg['humidity']]
+    except ValueError and ExternalSystemError as e:
+        module_logger.error(f'get_temperature() error[{e}]')
+        return get_sensor_temp()
 
