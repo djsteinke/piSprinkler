@@ -243,7 +243,7 @@ def get_temp(days):
                                "step": None,
                                "time": None,
                                "runTime": None,
-                               "delay": None}
+                               "delay": ""}
                }
                }
         if p.p is not None and p.running:
@@ -254,7 +254,7 @@ def get_temp(days):
 
         delay_date = parser.parse(delay)
         if delay_date > dt.datetime.now():
-            ret['response']['delay'] = delay
+            ret['response']['program']['delay'] = delay
         return ret, 200
     else:
         today = dt.date.today()
