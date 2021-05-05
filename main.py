@@ -47,6 +47,8 @@ s = Setup()
 p = Program(None, None, None, None)
 p_running = False
 
+delay = "2021-01-01 00:00:01"
+
 
 def check():
     global p_running, p
@@ -85,17 +87,50 @@ def get_f(c):
     return c * 1.8 + 32
 
 
+@app.route('/delay/<action>', defaults={'days': 0})
+@app.route('/delay/<action>/<days>')
+def set_delay(action, days):
+    global delay
+    ret = {"type": "delay",
+           "response": {
+                "action": action,
+                "status": "",
+                "date": ""}}
+    if action == 'set':
+        d = days + 1
+        delay_date = dt.datetime.now()
+        delay_date += dt.timedelta(days=d)
+        delay_date = delay_date.replace(hour=0, minute=0, second=0, microsecond=0)
+        delay = str(delay_date)
+        ret['response']['date'] = delay
+        ret['response']['status'] = 'success'
+    elif action == "cancel":
+        delay_date = dt.datetime.now()
+        delay_date = delay_date.replace(hour=0, minute=0, second=0, microsecond=0)
+        delay = str(delay_date)
+        ret['response']['date'] = delay
+        ret['response']['status'] = 'success'
+    else:
+        ret['response']['status'] = f'error: invalid action type[{action}]'
+    return ret, 200
+
+
 @app.route('/runProgram/<name>')
 def run_program(name):
     global p_running, s, t, p
+    ret = {"type": "runProgram",
+           "response": {
+                "name": name,
+                "status": ""}}
     for program in s.setup['programs']:
         if program['name'] == name:
             logger.debug(f"runProgram({name})")
             p = Program(program, s.setup, t.hist, program_complete)
             p.start()
-    return jsonify(message="Success",
-                   statusCode=200,
-                   data=name), 200
+            ret['response']['status'] = "success"
+            return ret, 200
+    ret['response']['status'] = f"error: program[{name}] does not exist"
+    return ret, 200
 
 
 @app.route('/relay/<pin_in>')
@@ -116,15 +151,23 @@ def relay_action(pin_in):
 
 @app.route('/getProgramStatus')
 def get_program_status():
-    ret = {"name": None,
-           "step": None,
-           "time": None,
-           "runTime": None}
+    ret = {"type": "programStatus",
+           "response": {
+               "status": "success",
+               "name": None,
+               "step": None,
+               "time": None,
+               "runTime": None,
+               "delay": ""}}
     if p.p is not None:
-        ret['name'] = p.p['name']
-        ret['step'] = p.step
-        ret['time'] = p.time
-        ret['runTime'] = p.run_time
+        ret['response']['name'] = p.p['name']
+        ret['response']['step'] = p.step
+        ret['response']['time'] = p.time
+        ret['response']['runTime'] = p.run_time
+    else:
+        delay_date = parser.parse(delay)
+        if delay_date > dt.datetime.now():
+            ret['response']['delay'] = delay
     return ret, 200
 
 
@@ -137,6 +180,10 @@ def get_setup():
 
 @app.route('/update/<setup_type>', methods=['POST'])
 def update(setup_type):
+    ret = {"type": "update",
+           "response": {
+               "type": setup_type,
+               "status": "success"}}
     if setup_type == "zones":
         z = request.json
         s.setup["zones"] = z
@@ -146,9 +193,7 @@ def update(setup_type):
         p = request.json
         s.setup["programs"] = p
         s.save()
-    return jsonify(message="Success",
-                   statusCode=200,
-                   data=setup_type), 200
+    return ret, 200
 
 
 @app.route("/setup/<action>")
