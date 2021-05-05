@@ -91,13 +91,14 @@ def get_f(c):
 @app.route('/delay/<action>/<days>')
 def set_delay(action, days):
     global delay
+    d = int(days)
     ret = {"type": "delay",
            "response": {
                 "action": action,
                 "status": "",
                 "date": ""}}
     if action == 'set':
-        d = days + 1
+        d = d + 1
         delay_date = dt.datetime.now()
         delay_date += dt.timedelta(days=d)
         delay_date = delay_date.replace(hour=0, minute=0, second=0, microsecond=0)
