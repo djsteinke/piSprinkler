@@ -185,13 +185,13 @@ def update(setup_type):
                "type": setup_type,
                "status": "success"}}
     if setup_type == "zones":
-        z = request.json
-        s.setup["zones"] = z
+        val = request.json
+        s.setup["zones"] = val
         s.save()
         logger.debug("update zones \n" + json.dumps(s.setup["zones"]))
     elif setup_type == "programs":
-        p = request.json
-        s.setup["programs"] = p
+        val = request.json
+        s.setup["programs"] = val
         s.save()
     return ret, 200
 
