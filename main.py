@@ -243,7 +243,7 @@ def get_temp(days):
                                "step": None,
                                "time": None,
                                "runTime": None,
-                               "delay": ""}
+                               "delay": None}
                }
                }
         if p.p is not None and p.running:
