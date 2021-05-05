@@ -13,22 +13,37 @@ class Program(object):
         self._p = p
         self._s = s
         self._t = t
+        self._r = None
         self._callback = callback
         self._step = 0
         self._run_time = 0.0
         self._time = 0.0
         self._running = False
+        self._timer = None
 
     def start(self):
         module_logger.debug("start()")
         self.run_step()
 
+    def stop(self):
+        module_logger.debug("stop()")
+        if self._timer is not None:
+            self._timer.cancel()
+        if self._r is not None:
+            self._step = -1
+            self._r.off()
+
     def run_step(self):
         self._running = False
         self._time = 0
         self._run_time = 0
-        if self._step >= len(self._p["steps"]):
-            module_logger.debug("complete()")
+        if self._step < 0 or self._step >= len(self._p["steps"]):
+            if self._step < 0:
+                module_logger.debug("cancelled()")
+            else:
+                module_logger.debug("complete()")
+            self._timer = None
+            self._r = None
             if self._callback is not None:
                 self._callback()
         else:
@@ -45,7 +60,7 @@ class Program(object):
                             head = z['type']
                             break
                     if pin > 0 and head >= 0:
-                        r = Relay(pin, self.run_step)
+                        self._r = Relay(pin, self.run_step)
                         if step['time'] > 0:
                             t = step['time']*60
                         else:
@@ -57,11 +72,11 @@ class Program(object):
                             run = False
                             self._time = 0
                             self._run_time = t
-                            r.set_run_time(int(t))
-                            r.set_wait(step['wait']*60)
-                            r.on()
-                            timer = threading.Timer(60, self.set_run_time)
-                            timer.start()
+                            self._r.set_run_time(int(t))
+                            self._r.set_wait(step['wait']*60)
+                            self._r.on()
+                            self._timer = threading.Timer(60, self.set_run_time)
+                            self._timer.start()
                         else:
                             run = True
             module_logger.debug(log_msg)
@@ -72,8 +87,8 @@ class Program(object):
     def set_run_time(self):
         if self._running:
             self._time += 1
-            timer = threading.Timer(60, self.set_run_time)
-            timer.start()
+            self._timer = threading.Timer(60, self.set_run_time)
+            self._timer.start()
 
     def det_run_time(self, p, h):
         # h = step["type"]

@@ -115,21 +115,28 @@ def set_delay(action, days):
     return ret, 200
 
 
-@app.route('/runProgram/<name>')
-def run_program(name):
+@app.route('/program/<action>', defaults={'name': ""})
+@app.route('/program/<action>/<name>')
+def run_program(action, name):
     global p_running, s, t, p
-    ret = {"type": "runProgram",
+    ret = {"type": "program",
            "response": {
+                "action": action,
                 "name": name,
                 "status": ""}}
-    for program in s.setup['programs']:
-        if program['name'] == name:
-            logger.debug(f"runProgram({name})")
-            p = Program(program, s.setup, t.hist, program_complete)
-            p.start()
+    if action == "run":
+        for program in s.setup['programs']:
+            if program['name'] == name:
+                logger.debug(f"runProgram({name})")
+                p = Program(program, s.setup, t.hist, program_complete)
+                p.start()
+                ret['response']['status'] = "success"
+                return ret, 200
+    elif action == "cancel":
+        if p.running:
+            p.stop()
             ret['response']['status'] = "success"
-            return ret, 200
-    ret['response']['status'] = f"error: program[{name}] does not exist"
+    ret['response']['status'] = f"error: program[{name}] does not exist or no program running"
     return ret, 200
 
 
