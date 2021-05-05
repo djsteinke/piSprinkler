@@ -252,7 +252,8 @@ def get_temp(days):
             ret['response']['program']['time'] = p.time
             ret['response']['program']['runTime'] = p.run_time
 
-        if parser.parse(delay) > dt.datetime.now():
+        delay_date = parser.parse(delay)
+        if delay_date > dt.datetime.now():
             ret['response']['delay'] = delay
         return ret, 200
     else:
