@@ -9,7 +9,6 @@ import RPi.GPIO as GPIO
 
 from flask import Flask, request, jsonify, send_from_directory
 
-from Emailer import Emailer
 from properties import port, TEXT_EMAIL, ip
 from program import Program
 from temperature import Temperature
@@ -280,13 +279,6 @@ def get_temp_html():
     ret += f"Temp Avg: {get_temp_str(cond_avg[0])} <br/>" + f"Humidity Avg: {cond_avg[1]:.0f}% <br/>"
     ret += f"Temp Max: {get_temp_str(cond_max[0])} <br/>" + f"Temp Min: {get_temp_str(cond_max[1])}"
     return ret, 200
-
-
-@app.route('/email')
-def email():
-    sender = Emailer()
-    sender.send_mail(TEXT_EMAIL, 'Test', 'Email Test')
-    return True, 200
 
 
 @app.route('/favicon.ico')
