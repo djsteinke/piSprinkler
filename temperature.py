@@ -17,6 +17,7 @@ f_today = os.path.join(fdir, 'today_t.json')
 
 class Temperature(object):
     def __init__(self):
+        module_logger.debug("create Temperature(object)")
         self._today = {
             "date": "2020-01-01 00:00:00",
             "temp": [],
@@ -58,10 +59,6 @@ class Temperature(object):
             self._today["temp"].append(c[0])
             self._today["humidity"].append(c[1])
             avg = self.get_today_avg()
-        if self._today["temp_max"] == 0 or self._today["temp_max"] < c[0]:
-            self._today["temp_max"] = c[0]
-        if self._today["temp_min"] == 0 or self._today["temp_min"] > c[0]:
-            self._today["temp_min"] = c[0]
         found = False
         for hist in self._hist["history"]:
             if hist["dt"] == self._today["date"]:
@@ -100,9 +97,16 @@ class Temperature(object):
                         "h": c[1]
                     })
             self._hist["history"].append(new_entry)
+
+        # Set min/max values
+        if self._today["temp_max"] == 0 or self._today["temp_max"] < c[0]:
+            self._today["temp_max"] = c[0]
+        if self._today["temp_min"] == 0 or self._today["temp_min"] > c[0]:
+            self._today["temp_min"] = c[0]
         self.save()
 
     def reset_today(self):
+        module_logger.debug("reset_today()")
         today = dt.date.today()
         self._today["date"] = str(today)
         self._today["temp"] = []
@@ -143,12 +147,15 @@ class Temperature(object):
             self._today = json.loads(td.read())
             td.close()
             self._date = parser.parse(self._today["date"]).date()
+            module_logger.debug("load(exists)")
         except FileNotFoundError:
             self.save()
+            module_logger.debug("load(FileNotFound)")
 
     def start(self):
         timer = threading.Timer(60, self.record)
         timer.start()
+        module_logger.debug("start")
 
     def record(self):
         if dt.date.today() != self._date:

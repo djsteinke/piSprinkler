@@ -1,7 +1,10 @@
 import json
+import logging
 import os
 
 from static import fdir
+
+module_logger = logging.getLogger('main.setup')
 
 setup_msg = {
     "average_temps": [32.0, 28.0, 35.1, 49.1, 51.6, 65.6, 75.7, 75.4, 69.3, 43.7, 36.2, 33.7],
@@ -35,14 +38,17 @@ class Setup(object):
             f = open(f_setup, "r")
             self._setup = json.loads(f.read())
             f.close()
+            module_logger.debug('Setup(exists)')
         except FileNotFoundError:
             self.save()
+            module_logger.debug('Setup(FileNotFound)')
 
     def save(self):
         global f_setup
         f = open(f_setup, "w")
         f.write(json.dumps(self._setup, indent=4))
         f.close()
+        module_logger.debug('save()')
 
     def load(self):
         global f_setup
@@ -50,8 +56,10 @@ class Setup(object):
             f = open(f_setup, "r")
             self._setup = json.loads(f.read())
             f.close()
+            module_logger.debug('load(exists)')
         except FileNotFoundError:
             self.save()
+            module_logger.debug('load(FileNotFound)')
 
     @property
     def setup(self):

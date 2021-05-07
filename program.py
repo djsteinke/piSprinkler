@@ -69,7 +69,10 @@ class Program(object):
                             self._time = 0
                             self._run_time = t
                             self._r.set_run_time(int(t))
-                            self._r.set_wait(step['wait']*60)
+                            w = 3
+                            if step['wait'] > 0:
+                                w = step['wait']*60
+                            self._r.set_wait(w)
                             self._r.on()
                             timer = threading.Timer(60, self.set_run_time)
                             timer.start()
@@ -87,8 +90,6 @@ class Program(object):
             timer.start()
 
     def det_run_time(self, p, h):
-        # h = step["type"]
-        # p = step["percent"]/100.0
         date = dt.datetime.today()
         month = dt.date.today().month - 1
         date = date.replace(hour=0, minute=0, second=0, microsecond=0)

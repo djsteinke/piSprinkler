@@ -119,7 +119,7 @@ def set_delay(action, days):
 @app.route('/program/<action>', defaults={'name': ""})
 @app.route('/program/<action>/<name>')
 def run_program(action, name):
-    global p_running, s, t, p
+    global p_running, s, p
     ret = {"type": "program",
            "response": {
                 "action": action,
