@@ -16,8 +16,8 @@ class Program(object):
         self._r = None
         self._callback = callback
         self._step = 0
-        self._run_time = 0.0
-        self._time = 0.0
+        self._run_time = 0
+        self._time = 0
         self._running = False
 
     def start(self):
@@ -67,7 +67,7 @@ class Program(object):
                             self._running = True
                             run = False
                             self._time = 0
-                            self._run_time = t
+                            self._run_time = int(t)
                             self._r.set_run_time(int(t))
                             w = 3
                             if step['wait'] > 0:
