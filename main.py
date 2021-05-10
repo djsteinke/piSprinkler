@@ -136,6 +136,7 @@ def run_program(action, name):
         if p.running:
             p.stop()
             ret['response']['status'] = "success"
+            return ret, 200
     ret['response']['status'] = f"error: program[{name}] does not exist or no program running"
     return ret, 200
 
