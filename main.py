@@ -56,7 +56,7 @@ def check():
         active = "ACTIVE"
         if not program['active']:
             active = "INACTIVE"
-        logger.debug(f"check({program['name']}) {active} now[{dt.datetime.now()}] next[{next_date}]")
+        # logger.debug(f"check({program['name']}) {active} now[{dt.datetime.now()}] next[{next_date}]")
         if next_date < dt.datetime.now() and not p_running:
             p = Program(program, s.setup, t.hist, program_complete)
             if program['active']:
