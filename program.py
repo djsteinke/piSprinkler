@@ -15,35 +15,43 @@ class Program(object):
         self._t = t
         self._r = None
         self._callback = callback
+        self._step_cnt = 0
         self._step = 0
+        self._step_time = 0
         self._run_time = 0
-        self._time = 0
         self._running = False
+        self._timer = None
 
     def start(self):
         module_logger.debug("start()")
+        self._step_cnt = len(self._p["steps"])
+        self._running = True
         self.run_step()
+
+    def cancel(self):
+        module_logger.debug("cancel()")
+        self._running = False
+        if self._r is not None:
+            self._r.off()
 
     def stop(self):
         module_logger.debug("stop()")
-        if self._r is not None:
-            self._step = -1
-            self._r.off()
+        self._running = False
+        self._r = None
+        self._step = 0
+        self._step_cnt = 0
+        if self._callback is not None:
+            self._callback()
 
     def run_step(self):
-        self._running = False
-        self._time = 0
+        self._step += 1
+        self._step_time = 0
         self._run_time = 0
-        if self._step < 0 or self._step >= len(self._p["steps"]):
-            if self._step < 0:
-                module_logger.debug("cancelled()")
-            else:
-                module_logger.debug("complete()")
-            self._r = None
-            if self._callback is not None:
-                self._callback()
+        self._timer.cancel()
+        if not self._running or self._step >= self._step_cnt:
+            self.stop()
         else:
-            log_msg = f"run_step() [{self._step+1} of {len(self._p['steps'])}]"
+            log_msg = f"run_step() [{self._step + 1} of {self._step_cnt}]"
             run = True
             for step in self._p['steps']:
                 if step['step'] == self._step:
@@ -58,24 +66,22 @@ class Program(object):
                     if pin > 0 and head >= 0:
                         self._r = Relay(pin, self.run_step)
                         if step['time'] > 0:
-                            t = step['time']*60
+                            t = step['time'] * 60
                         else:
-                            t = self.det_run_time(step['percent']/100.0, head)
-                            t = t*12.0/(28.0/self._p['interval'])
+                            t = self.det_run_time(step['percent'] / 100.0, head)
+                            t = t * 12.0 / (28.0 / self._p['interval'])
                         log_msg += f" zone[{zone}] head[{head}] pin[{pin}] time[{t:.1f}]"
                         if t > 0:
-                            self._running = True
                             run = False
-                            self._time = 0
-                            self._run_time = int(t)
+                            self._step_time = int(t)
                             self._r.set_run_time(int(t))
                             w = 3
                             if step['wait'] > 0:
-                                w = step['wait']*60
+                                w = step['wait'] * 60
                             self._r.set_wait(w)
                             self._r.on()
-                            timer = threading.Timer(60, self.set_run_time)
-                            timer.start()
+                            self._timer = threading.Timer(60, self.set_run_time)
+                            self._timer.start()
                         else:
                             run = True
             module_logger.debug(log_msg)
@@ -85,9 +91,9 @@ class Program(object):
 
     def set_run_time(self):
         if self._running:
-            self._time += 1
-            timer = threading.Timer(60, self.set_run_time)
-            timer.start()
+            self._run_time += 1
+            self._timer = threading.Timer(60, self.set_run_time)
+            self._timer.start()
 
     def det_run_time(self, p, h):
         date = dt.datetime.today()
@@ -111,11 +117,11 @@ class Program(object):
             module_logger.debug("det_run_time() temp history not found.")
             return 0
         else:
-            avg_temp = act_temp/act_cnt
+            avg_temp = act_temp / act_cnt
         per_temp = 1.0
         if self._s['average_temps'][month] > 0:
-            per_temp = get_f_from_c(avg_temp)/self._s['average_temps'][month]
-        return self._s['watering_times'][h][month]*per_temp*60.0*p
+            per_temp = get_f_from_c(avg_temp) / self._s['average_temps'][month]
+        return self._s['watering_times'][h][month] * per_temp * 60.0 * p
 
     @property
     def p(self):
@@ -126,8 +132,12 @@ class Program(object):
         return self._step
 
     @property
-    def time(self):
-        return self._time
+    def step_cnt(self):
+        return self._step_cnt
+
+    @property
+    def step_time(self):
+        return self._step_time
 
     @property
     def run_time(self):
