@@ -249,8 +249,8 @@ def get_temp(days):
         if p.p is not None and p.running:
             ret['response']['program']['name'] = p.p['name']
             ret['response']['program']['step'] = p.step
-            ret['response']['program']['time'] = p.time
-            ret['response']['program']['runTime'] = p.run_time
+            ret['response']['program']['time'] = p.run_time
+            ret['response']['program']['runTime'] = p.step_time
 
         delay_date = parser.parse(delay)
         if delay_date > dt.datetime.now():
