@@ -47,7 +47,8 @@ class Program(object):
         self._step += 1
         self._step_time = 0
         self._run_time = 0
-        self._timer.cancel()
+        if self._timer is not None:
+            self._timer.cancel()
         if not self._running or self._step >= self._step_cnt:
             self.stop()
         else:
