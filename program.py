@@ -16,7 +16,7 @@ class Program(object):
         self._r = None
         self._callback = callback
         self._step_cnt = 0
-        self._step = 0
+        self._step = -1
         self._step_time = 0
         self._run_time = 0
         self._running = False
@@ -38,7 +38,7 @@ class Program(object):
         module_logger.debug("stop()")
         self._running = False
         self._r = None
-        self._step = 0
+        self._step = -1
         self._step_cnt = 0
         if self._callback is not None:
             self._callback()
