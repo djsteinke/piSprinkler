@@ -71,7 +71,7 @@ class Program(object):
                         else:
                             t = self.det_run_time(step['percent'] / 100.0, head)
                             t = t * 12.0 / (28.0 / self._p['interval'])
-                        log_msg += f" zone[{zone}] head[{head}] pin[{pin}] time[{t:.1f}]"
+                        log_msg += f" zone[{zone}] head[{head}] pin[{pin}] time[{int(t/60)}]"
                         if t > 0:
                             run = False
                             self._step_time = int(t)
