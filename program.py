@@ -86,7 +86,6 @@ class Program(object):
                         else:
                             run = True
             module_logger.debug(log_msg)
-            self._step += 1
             if run:
                 self.run_step()
 
