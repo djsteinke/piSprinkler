@@ -48,9 +48,11 @@ class Relay(object):
             timer = threading.Timer(self._run_time, self.off)
             timer.start()
 
+    def force_off(self):
+        self._wait = 0
+        self.off()
+
     def off(self):
-        # TODO turn off
-        self._on = False
         GPIO.output(self._pin, self._gpio_off)
         if self._callback is not None:
             timer = threading.Timer(self._wait, self._callback)

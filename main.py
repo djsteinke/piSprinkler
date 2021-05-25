@@ -134,7 +134,7 @@ def run_program(action, name):
                 return ret, 200
     elif action == "cancel":
         if p.running:
-            p.stop()
+            p.cancel()
             ret['response']['status'] = "success"
             return ret, 200
     ret['response']['status'] = f"error: program[{name}] does not exist or no program running"

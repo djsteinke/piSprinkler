@@ -32,7 +32,7 @@ class Program(object):
         module_logger.debug("cancel()")
         self._running = False
         if self._r is not None:
-            self._r.off()
+            self._r.force_off()
 
     def stop(self):
         module_logger.debug("stop()")
