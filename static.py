@@ -1,7 +1,7 @@
 import logging
 import os
 
-from pip._vendor import requests
+import requests
 
 import properties
 import smbus
@@ -9,7 +9,8 @@ import time
 
 bus = smbus.SMBus(1)
 config = [0x08, 0x00]
-fdir = os.path.abspath('/home/pi/projects/piSprinkler')
+# fdir = os.path.abspath('/home/pi/projects/piSprinkler')
+fdir = os.path.abspath('C:/MyData/Program Files/PyCharm/pi_sprinkler')
 
 module_logger = logging.getLogger('main.static')
 
@@ -49,12 +50,13 @@ def get_sensor_temp():
 
 def get_temperature():
     try:
-        x = requests.get('http://192.168.0.140:31000/getTemp')
+        x = requests.get('http://192.168.0.140:31000/getTemp', timeout=10)
         msg = x.json()
         if msg['humidity'] < 0:
             raise ExternalSystemError('Sensor not connected.')
+        if not x.ok:
+            raise ExternalSystemError(f'URL error: {x.status_code} - {x.reason}')
         return [msg['temp'], msg['humidity']]
-    except ValueError and ExternalSystemError as e:
+    except requests.exceptions.ReadTimeout and ValueError and ExternalSystemError as e:
         module_logger.error(f'get_temperature() error[{e}]')
         return get_sensor_temp()
-

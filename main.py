@@ -9,12 +9,11 @@ import RPi.GPIO as GPIO
 
 from flask import Flask, request, jsonify, send_from_directory
 
-from properties import port, TEXT_EMAIL, ip
+from properties import port, ip
 from program import Program
 from temperature import Temperature
 from setup import Setup
-from relay import Relay
-from static import get_logging_level, get_temperature
+from static import get_logging_level, get_temperature, get_sensor_temp
 import os
 
 degree_sign = u"\N{DEGREE SIGN}"
@@ -53,10 +52,6 @@ def check():
     global p_running, p
     for program in s.setup['programs']:
         next_date = parser.parse(program["nextRunTime"])
-        active = "ACTIVE"
-        if not program['active']:
-            active = "INACTIVE"
-        # logger.debug(f"check({program['name']}) {active} now[{dt.datetime.now()}] next[{next_date}]")
         if next_date < dt.datetime.now() and not p_running:
             p = Program(program, s.setup, t.hist, program_complete)
             if program['active']:
@@ -170,7 +165,7 @@ def get_program_status():
     if p.p is not None:
         ret['response']['name'] = p.p['name']
         ret['response']['step'] = p.step
-        ret['response']['time'] = p.time
+        ret['response']['time'] = p.step_time
         ret['response']['runTime'] = p.run_time
     else:
         delay_date = parser.parse(delay)
@@ -215,8 +210,8 @@ def setup_cmd(action):
 
 
 @app.route('/getSensorTemp')
-def get_sensor_temp():
-    cond = get_temperature()
+def get_s_temp():
+    cond = get_sensor_temp()
     ret = {"temp": cond[0],
            "humidity": cond[1],
            "temp_f": get_f(cond[0])}
