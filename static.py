@@ -9,8 +9,8 @@ import time
 
 bus = smbus.SMBus(1)
 config = [0x08, 0x00]
-# fdir = os.path.abspath('/home/pi/projects/piSprinkler')
-fdir = os.path.abspath('C:/MyData/Program Files/PyCharm/pi_sprinkler')
+fdir = os.path.abspath('/home/pi/projects/piSprinkler')
+# fdir = os.path.abspath('C:/MyData/Program Files/PyCharm/pi_sprinkler')
 
 module_logger = logging.getLogger('main.static')
 
