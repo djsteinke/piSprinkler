@@ -51,12 +51,12 @@ def get_sensor_temp():
 def get_temperature():
     try:
         x = requests.get('http://192.168.0.140:31000/getTemp', timeout=10)
+        if not x.ok:
+            raise ExternalSystemError(f'URL error: {x.status_code} - {x.reason}')
         msg = x.json()
         if msg['humidity'] < 0:
             raise ExternalSystemError('Sensor not connected.')
-        if not x.ok:
-            raise ExternalSystemError(f'URL error: {x.status_code} - {x.reason}')
         return [msg['temp'], msg['humidity']]
-    except requests.exceptions.ReadTimeout and ValueError and ExternalSystemError as e:
+    except requests.exceptions and ValueError and ExternalSystemError as e:
         module_logger.error(f'get_temperature() error[{e}]')
         return get_sensor_temp()
