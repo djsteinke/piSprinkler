@@ -23,7 +23,7 @@ def set_temperature(in_val):
 
 
 def set_humidity(in_val):
-    global t
-    if in_val != t:
+    global h
+    if in_val != h:
         ref.child('humidity').update(in_val)
-        t = in_val
+        h = in_val
