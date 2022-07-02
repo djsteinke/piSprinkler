@@ -147,7 +147,6 @@ def run_program(action, name):
 @app.route('/relay/<pin_in>')
 def relay_action(pin_in):
     logger.debug(f"relay[{pin_in}] action[ON] time[1]")
-
     # relay.set_pin(int(pin_in))
     action = "on"
     # if action == "on":

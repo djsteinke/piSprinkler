@@ -3,6 +3,7 @@ import datetime as dt
 import logging
 import os
 
+import firebase_db
 from dateutil import parser
 import threading
 
@@ -53,6 +54,8 @@ class Temperature(object):
 
     def add_temp(self, add):
         c = get_temperature()
+        firebase_db.set_temperature(round(c[0], 1))
+        firebase_db.set_humidity(round(c[1], 0))
         avg = (0, 0)
         if add:
             module_logger.debug(f"add_temp() temp[{c[0]}] humidity[{c[1]}]")
