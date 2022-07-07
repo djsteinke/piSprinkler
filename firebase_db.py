@@ -1,5 +1,9 @@
 import firebase_admin
 from firebase_admin import db
+import logging
+
+
+module_logger = logging.getLogger('firebase_db')
 
 databaseURL = "https://rn5notifications-default-rtdb.firebaseio.com/"
 appKey = "sprinkler"
@@ -30,5 +34,8 @@ def set_humidity(in_val):
 
 
 def set_next_run_time(prog_key, in_val):
-    child = f"setup/programs/{str(prog_key)}/nextRunTime"
-    ref.child(child).set(in_val)
+    try:
+        child = f"setup/programs/{str(prog_key)}/nextRunTime"
+        ref.child(child).set(in_val)
+    except Exception as e:
+        module_logger.error(str(e))
