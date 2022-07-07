@@ -27,3 +27,8 @@ def set_humidity(in_val):
     if in_val != h:
         ref.child('humidity').set(in_val)
         h = in_val
+
+
+def set_next_run_time(prog_key, in_val):
+    child = f"setup/programs/{str(prog_key)}/nextRunTime"
+    ref.child(child).set(in_val)

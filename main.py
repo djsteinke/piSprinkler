@@ -15,6 +15,7 @@ from temperature import Temperature
 from setup import Setup
 from static import get_logging_level, get_temperature, get_sensor_temp
 import os
+import firebase_db
 
 degree_sign = u"\N{DEGREE SIGN}"
 
@@ -51,6 +52,7 @@ delay = "2021-01-01 00:00:01"
 def check():
     global p_running, p
     delay_date = parser.parse(s.setup['delay'])
+    prog_key = 0
     for program in s.setup['programs']:
         next_date = parser.parse(program["nextRunTime"])
         if next_date < dt.datetime.now() and not p_running:
@@ -66,8 +68,10 @@ def check():
             next_date += dt.timedelta(days=interval)
             next_date = next_date.replace(hour=start_time.hour, minute=start_time.minute, second=0, microsecond=0)
             program["nextRunTime"] = str(next_date)
+            firebase_db.set_next_run_time(prog_key, str(next_date))
             logger.info(f"next run {next_date}")
             s.save()
+        prog_key += 1
     timer = threading.Timer(60, check)
     timer.start()
 
