@@ -53,6 +53,7 @@ def set_next_run_time(prog_key, in_val):
 
 def start_programs_listener():
     try:
+        module_logger.debug("Starting Programs Listener")
         db_programs.listen(programs_listener)
     except FirebaseError:
         module_logger.error('failed to start listener... trying again.')
