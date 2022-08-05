@@ -4,7 +4,7 @@ from firebase_admin.exceptions import FirebaseError
 import logging
 
 
-module_logger = logging.getLogger('firebase_db')
+module_logger = logging.getLogger('main.firebase_db')
 
 databaseURL = "https://rn5notifications-default-rtdb.firebaseio.com/"
 appKey = "sprinkler"
