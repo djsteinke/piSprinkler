@@ -59,6 +59,3 @@ def start_programs_listener():
     except FirebaseError:
         module_logger.error('failed to start listener... trying again.')
         start_programs_listener()
-
-
-start_programs_listener()
