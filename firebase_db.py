@@ -26,7 +26,8 @@ def programs_listener(event):
     module_logger.debug('firebase listener...')
     if event.data:
         # TODO : Load programs
-        module_logger.debug("PROGRAMS: " + db_programs.get())
+        module_logger.debug("PROGRAMS: ")
+        module_logger.debug(db_programs.get())
 
 
 def set_temperature(in_val):
