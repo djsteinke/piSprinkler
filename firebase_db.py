@@ -1,5 +1,6 @@
 import firebase_admin
 from firebase_admin import db
+from firebase_admin.exceptions import FirebaseError
 import logging
 
 
@@ -15,8 +16,17 @@ default_app = firebase_admin.initialize_app(cred_obj, {
 
 ref = db.reference(appKey)
 
+db_programs = ref.child('setup/programs')
+
 t = 0.0
 h = 0
+
+
+def programs_listener(event):
+    module_logger.debug('firebase listener...')
+    if event.data:
+        # TODO : Load programs
+        print(db_programs.get())
 
 
 def set_temperature(in_val):
@@ -39,3 +49,14 @@ def set_next_run_time(prog_key, in_val):
         ref.child(child).set(in_val)
     except Exception as e:
         module_logger.error(str(e))
+
+
+def start_programs_listener():
+    try:
+        db_programs.listen(programs_listener)
+    except FirebaseError:
+        module_logger.error('failed to start listener... trying again.')
+        start_programs_listener()
+
+
+start_programs_listener()
