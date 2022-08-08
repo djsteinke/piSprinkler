@@ -29,6 +29,7 @@ def add_temp_today(val):
     for day in history:
         module_logger.debug(day)
         new_history = day.child('history').push().set(val)
+        module_logger.debug(new_history)
 
 
 def add_day(val):
