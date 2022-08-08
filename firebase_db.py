@@ -31,12 +31,13 @@ def add_temp(day_val, time_val=None):
         found = False
         for key, val in snapshot.items():
             today = dt.date.today()
-            last_history = ref.child('history/' + key).get()
+            last_history_ref = ref.child('history/' + key)
+            last_history = last_history_ref.get()
             module_logger.debug(key + " : " + last_history['dt'])
             if last_history['dt'] == str(today):
                 module_logger.debug('date found' + key)
-                # last_history.update(day_val)
-                history_ref = last_history.child("history")
+                last_history_ref.update(day_val)
+                history_ref = last_history_ref.child("history")
                 new_history = history_ref.push()
                 new_history.set(time_val)
                 found = True
