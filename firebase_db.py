@@ -25,13 +25,15 @@ h = 0
 def add_temp_today(val, day_val=None):
     module_logger.debug('add_temp_today()')
     module_logger.debug(val)
-    if ref.child('history').order_by_key().limit_to_last(1).get():
+    if ref.child('history').get():
         snapshot = ref.child('history').order_by_key().limit_to_last(1).get()
         module_logger.debug('snapshot exists')
         try:
             for key, val in snapshot.items():
                 module_logger.debug(key)
-                new_history = ref.child('history/'+key).push().set(val)
+                history_ref = ref.child('history/' + key + "/history")
+                new_history = history_ref.push()
+                new_history.set(val)
                 module_logger.debug(new_history.key)
         except Exception as e:
             module_logger.error(str(e))
@@ -47,10 +49,12 @@ def add_temp_today(val, day_val=None):
         try:
             history_ref = ref.child('history')
             module_logger.debug(history_ref)
-            new_history = history_ref.push().set(new_entry)
+            new_history = history_ref.push()
+            new_history.set(new_entry)
             module_logger.debug(new_history.key)
-            new_history_ref = ref.child('history/'+new_history.key)
-            new_history_tmp = new_history_ref.push().set(val)
+            new_history_ref = new_history.child('history')
+            new_history_tmp = new_history_ref.push()
+            new_history_tmp.set(val)
             module_logger.debug(new_history_tmp.key)
         except Exception as e:
             module_logger.error(str(e))
