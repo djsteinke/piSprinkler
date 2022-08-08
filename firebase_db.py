@@ -23,11 +23,16 @@ h = 0
 
 
 def add_temp_today(val):
+    module_logger.debug('add_temp_today()')
+    module_logger.debug(val)
     history = ref.child('history').order_by_key().limit_to_last(1).get()
+    module_logger.debug(history)
     history.child('history').push(val)
 
 
 def add_day(val):
+    module_logger.debug('add_day()')
+    module_logger.debug(val)
     history = db.reference(appKey + "/history")
     history.push(val)
 
