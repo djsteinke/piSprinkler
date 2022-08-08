@@ -28,8 +28,7 @@ def add_temp_today(val):
     history = ref.child('history').order_by_key().limit_to_last(1).get()
     for day in history:
         module_logger.debug(day)
-        new_history = day.child('history').push()
-        new_history.set(val)
+        new_history = day.child('history').push().set(val)
 
 
 def add_day(val):
