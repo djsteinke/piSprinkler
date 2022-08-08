@@ -2,6 +2,7 @@ import firebase_admin
 from firebase_admin import db
 from firebase_admin.exceptions import FirebaseError
 import logging
+import datetime as dt
 
 
 module_logger = logging.getLogger('main.firebase_db')
@@ -22,50 +23,42 @@ t = 0.0
 h = 0
 
 
-def add_temp_today(val, day_val=None):
+def add_temp(day_val, time_val=None):
     module_logger.debug('add_temp_today()')
-    module_logger.debug(val)
+    module_logger.debug(time_val)
     if ref.child('history').get():
         snapshot = ref.child('history').order_by_key().limit_to_last(1).get()
         module_logger.debug('snapshot exists')
-        try:
-            for key, val in snapshot.items():
-                module_logger.debug(key)
-                history_ref = ref.child('history/' + key + "/history")
+        found = False
+        for key, val in snapshot.items():
+            today = dt.date.today()
+            last_history = ref.child('history/' + key).get()
+            if last_history['dt'] == str(today):
+                last_history.update(day_val)
+                history_ref = last_history.child("history")
                 new_history = history_ref.push()
                 new_history.set(val)
-                module_logger.debug(new_history.key)
-        except Exception as e:
-            module_logger.error(str(e))
+                found = True
+        if not found:
+            history_ref = ref.child('history')
+            new_history = history_ref.push()
+            new_history.set(day_val)
+            if time_val is not None:
+                new_history_ref = new_history.child('history')
+                new_history_tmp = new_history_ref.push()
+                new_history_tmp.set(time_val)
     else:
         module_logger.debug('snapshot does not exist')
-        new_entry = {
-                "dt": day_val["dt"],
-                "tAvg": day_val["tAvg"],
-                "hAvg": day_val["hAvg"],
-                "tMax": day_val["tMax"],
-                "tMin": day_val["tMin"]
-            }
         try:
             history_ref = ref.child('history')
-            module_logger.debug(history_ref)
             new_history = history_ref.push()
-            new_history.set(new_entry)
-            module_logger.debug(new_history.key)
-            new_history_ref = new_history.child('history')
-            new_history_tmp = new_history_ref.push()
-            new_history_tmp.set(val)
-            module_logger.debug(new_history_tmp.key)
+            new_history.set(day_val)
+            if time_val is not None:
+                new_history_ref = new_history.child('history')
+                new_history_tmp = new_history_ref.push()
+                new_history_tmp.set(time_val)
         except Exception as e:
             module_logger.error(str(e))
-
-
-def add_day(val):
-    module_logger.debug('add_day()')
-    module_logger.debug(val)
-    history = db.reference(appKey + "/history")
-    new_history = history.push()
-    new_history.set(val)
 
 
 def programs_listener(event):
