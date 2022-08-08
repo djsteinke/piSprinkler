@@ -22,6 +22,16 @@ t = 0.0
 h = 0
 
 
+def add_temp_today(val):
+    history = ref.child('history').order_by_key().limit_to_last(1).get()
+    history.child('history').push(val)
+
+
+def add_day(val):
+    history = db.reference(appKey + "/history")
+    history.push(val)
+
+
 def programs_listener(event):
     module_logger.debug('firebase listener...')
     if event.data:

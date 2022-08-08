@@ -67,8 +67,10 @@ class Temperature(object):
             if hist["dt"] == self._today["date"]:
                 if hist['tMax'] < c[0]:
                     hist['tMax'] = c[0]
+                    # TODO set FbDB
                 if hist['tMin'] > c[0]:
                     hist['tMin'] = c[0]
+                    # TODO set FbDB
                 if add:
                     hist['tAvg'] = avg[0]
                     hist['hAvg'] = avg[1]
@@ -80,6 +82,7 @@ class Temperature(object):
                         "h": c[1]
                     }
                     hist['history'].append(new_temp)
+                    firebase_db.add_temp_today(new_temp)    # TODO set FbDB
                 found = True
                 break
         if not found:
@@ -100,6 +103,7 @@ class Temperature(object):
                         "h": c[1]
                     })
             self._hist["history"].append(new_entry)
+            firebase_db.add_day(new_entry)          # TODO Send to FbDB
 
         # Set min/max values
         if self._today["temp_max"] == 0 or self._today["temp_max"] < c[0]:
