@@ -26,13 +26,13 @@ def add_temp_today(val):
     module_logger.debug('add_temp_today()')
     module_logger.debug(val)
     history = ref.child('history').order_by_key().limit_to_last(1).get()
-    for day in history:
-        module_logger.debug(day)
-        try:
-            new_history = day.child('history').push().set(val)
+    try:
+        for key, val in history:
+            module_logger.debug(key)
+            new_history = ref.child('history/'+key).push().set(val)
             module_logger.debug(new_history.key)
-        except Exception as e:
-            module_logger.error(str(e))
+    except Exception as e:
+        module_logger.error(str(e))
 
 
 def add_day(val):
