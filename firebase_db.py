@@ -45,12 +45,12 @@ def add_temp_today(val, day_val=None):
                 "tMin": day_val["tMin"]
             }
         try:
-            new_history = ref.child('history')
-            module_logger.debug(new_history)
-            new_history.push().set(new_entry)
+            history_ref = ref.child('history')
+            module_logger.debug(history_ref)
+            new_history = history_ref.push().set(new_entry)
             module_logger.debug(new_history.key)
-            new_history_tmp = ref.child('history/'+new_history.key)
-            new_history_tmp.push().set(val)
+            new_history_ref = ref.child('history/'+new_history.key)
+            new_history_tmp = new_history_ref.push().set(val)
             module_logger.debug(new_history_tmp.key)
         except Exception as e:
             module_logger.error(str(e))
