@@ -25,9 +25,9 @@ h = 0
 def add_temp_today(val):
     module_logger.debug('add_temp_today()')
     module_logger.debug(val)
-    history = ref.child('history').order_by_key().limit_to_last(1).get()
+    snapshot = ref.child('history').order_by_key().limit_to_last(1).get()
     try:
-        for key, val in history:
+        for key, val in snapshot.items():
             module_logger.debug(key)
             new_history = ref.child('history/'+key).push().set(val)
             module_logger.debug(new_history.key)
