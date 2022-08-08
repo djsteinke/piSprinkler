@@ -35,7 +35,7 @@ def add_temp(day_val, time_val=None):
             module_logger.debug(key + " : " + last_history['dt'])
             if last_history['dt'] == str(today):
                 module_logger.debug('date found' + key)
-                last_history.update(day_val)
+                # last_history.update(day_val)
                 history_ref = last_history.child("history")
                 new_history = history_ref.push()
                 new_history.set(time_val)
