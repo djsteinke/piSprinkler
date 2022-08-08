@@ -27,14 +27,16 @@ def add_temp_today(val):
     module_logger.debug(val)
     history = ref.child('history').order_by_key().limit_to_last(1).get()
     module_logger.debug(history)
-    history.child('history').push(val)
+    new_history = history.child('history').push()
+    new_history.set(val)
 
 
 def add_day(val):
     module_logger.debug('add_day()')
     module_logger.debug(val)
     history = db.reference(appKey + "/history")
-    history.push(val)
+    new_history = history.push()
+    new_history.set(val)
 
 
 def programs_listener(event):
