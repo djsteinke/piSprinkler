@@ -37,7 +37,7 @@ def add_temp(day_val, time_val=None):
                 last_history.update(day_val)
                 history_ref = last_history.child("history")
                 new_history = history_ref.push()
-                new_history.set(val)
+                new_history.set(time_val)
                 found = True
         if not found:
             history_ref = ref.child('history')
