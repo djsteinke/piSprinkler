@@ -24,7 +24,6 @@ h = 0
 
 
 def add_temp(day_val, time_val=None):
-    module_logger.debug('add_temp_today()')
     module_logger.debug(time_val)
     if ref.child('history').get():
         snapshot = ref.child('history').order_by_key().limit_to_last(1).get()
@@ -33,13 +32,16 @@ def add_temp(day_val, time_val=None):
         for key, val in snapshot.items():
             today = dt.date.today()
             last_history = ref.child('history/' + key).get()
+            module_logger.debug(key + " : " + last_history['dt'])
             if last_history['dt'] == str(today):
+                module_logger.debug('date found' + key)
                 last_history.update(day_val)
                 history_ref = last_history.child("history")
                 new_history = history_ref.push()
                 new_history.set(time_val)
                 found = True
         if not found:
+            module_logger.debug('date not found. add day.')
             history_ref = ref.child('history')
             new_history = history_ref.push()
             new_history.set(day_val)
