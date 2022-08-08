@@ -22,17 +22,33 @@ t = 0.0
 h = 0
 
 
-def add_temp_today(val):
+def add_temp_today(val, day_val=None):
     module_logger.debug('add_temp_today()')
     module_logger.debug(val)
     snapshot = ref.child('history').order_by_key().limit_to_last(1).get()
-    try:
-        for key, val in snapshot.items():
-            module_logger.debug(key)
-            new_history = ref.child('history/'+key).push().set(val)
+    if snapshot.len() > 0:
+        try:
+            for key, val in snapshot.items():
+                module_logger.debug(key)
+                new_history = ref.child('history/'+key).push().set(val)
+                module_logger.debug(new_history.key)
+        except Exception as e:
+            module_logger.error(str(e))
+    else:
+        new_entry = {
+                "dt": day_val["dt"],
+                "tAvg": day_val["tAvg"],
+                "hAvg": day_val["hAvg"],
+                "tMax": day_val["tMax"],
+                "tMin": day_val["tMin"]
+            }
+        try:
+            new_history = ref.child('history').push().set(new_entry)
             module_logger.debug(new_history.key)
-    except Exception as e:
-        module_logger.error(str(e))
+            new_history_tmp = ref.child('history/'+new_history.key).push().set(val)
+            module_logger.debug(new_history_tmp.key)
+        except Exception as e:
+            module_logger.error(str(e))
 
 
 def add_day(val):

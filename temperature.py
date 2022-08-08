@@ -82,7 +82,7 @@ class Temperature(object):
                         "h": c[1]
                     }
                     hist['history'].append(new_temp)
-                    firebase_db.add_temp_today(new_temp)    # TODO set FbDB
+                    firebase_db.add_temp_today(new_temp, hist)    # TODO set FbDB
                 found = True
                 break
         if not found:
