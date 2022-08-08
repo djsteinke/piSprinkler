@@ -25,8 +25,8 @@ h = 0
 def add_temp_today(val, day_val=None):
     module_logger.debug('add_temp_today()')
     module_logger.debug(val)
-    snapshot = ref.child('history').order_by_key().limit_to_last(1).get()
-    if snapshot.len() > 0:
+    if ref.child('history').order_by_key().limit_to_last(1).get():
+        snapshot = ref.child('history').order_by_key().limit_to_last(1).get()
         module_logger.debug('snapshot exists')
         try:
             for key, val in snapshot.items():
