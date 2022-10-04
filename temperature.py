@@ -67,7 +67,8 @@ class Temperature(object):
         found = False
         max_hist = len(self._hist['history']) - 1
         module_logger.debug("max_hist: " + str(max_hist))
-        for hist in self._hist["history"][max_hist]:
+        if max_hist > 0:
+            hist = self._hist["history"][max_hist]
             module_logger.debug("hist: " + str(hist))
             if hist["dt"] == self._today["date"]:
                 module_logger.debug("dt exists")
@@ -98,7 +99,6 @@ class Temperature(object):
                     module_logger.debug("firebase_db.add_temp() 1")
                     firebase_db.add_temp(hist_today, new_temp)    # TODO set FbDB
                 found = True
-                break
 
         module_logger.debug("found: " + str(found))
         if not found:
