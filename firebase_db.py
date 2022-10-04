@@ -30,7 +30,7 @@ network_up = True
 
 
 def add_temp(day_val, time_val=None):
-    module_logger.debug(time_val)
+    module_logger.debug(str(time_val))
     if ref.child('history').get():
         snapshot = ref.child('history').order_by_key().limit_to_last(1).get()
         # module_logger.debug('snapshot exists')
