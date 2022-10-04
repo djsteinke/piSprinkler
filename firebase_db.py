@@ -72,11 +72,10 @@ def add_temp(day_val, time_val=None):
 def programs_listener(event):
     module_logger.debug('firebase listener...')
     if event.data:
-        module_logger.debug("data: " + str(event.data))
-        module_logger.debug("event_type: " + str(event.event_type))
+        module_logger.debug("event_type: " + str(event.event_type) + " data: " + str(event.data))
         # TODO : Load programs
-        module_logger.debug("PROGRAMS: ")
-        module_logger.debug(db_programs.get())
+        #module_logger.debug("PROGRAMS: ")
+        #module_logger.debug(db_programs.get())
 
 
 def set_temperature(in_val):
