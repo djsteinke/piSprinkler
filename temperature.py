@@ -14,6 +14,7 @@ module_logger = logging.getLogger('main.temperature')
 
 f_t = os.path.join(fdir, 't.json')
 f_today = os.path.join(fdir, 'today_t.json')
+record_timer = None
 
 
 class Temperature(object):
@@ -63,7 +64,8 @@ class Temperature(object):
             self._today["humidity"].append(c[1])
             avg = self.get_today_avg()
         found = False
-        for hist in self._hist["history"]:
+        max_hist = len(self._hist['history']) - 1
+        for hist in self._hist["history"][max_hist]:
             if hist["dt"] == self._today["date"]:
                 if hist['tMax'] < c[0]:
                     hist['tMax'] = c[0]
@@ -179,18 +181,20 @@ class Temperature(object):
             self.save()
             module_logger.debug("load(FileNotFound)")
 
-    def start(self):
-        timer = threading.Timer(60, self.record)
-        timer.start()
-        module_logger.debug("start")
-
     def record(self):
+        global record_timer
         if dt.date.today() != self._date:
             self.reset_today()
             self._date = dt.date.today()
         self.add_temp(True)
-        timer = threading.Timer(temp_refresh_interval, self.record)
-        timer.start()
+        if record_timer is not None:
+            record_timer.cancel()
+        record_timer = threading.Timer(temp_refresh_interval, self.record)
+        record_timer.start()
+
+    def start(self):
+        self.record()
+        module_logger.debug("start")
 
     @property
     def hist(self):
