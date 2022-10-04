@@ -68,7 +68,9 @@ class Temperature(object):
         max_hist = len(self._hist['history']) - 1
         module_logger.debug("max_hist: " + str(max_hist))
         for hist in self._hist["history"][max_hist]:
+            module_logger.debug("hist: " + str(hist))
             if hist["dt"] == self._today["date"]:
+                module_logger.debug("dt exists")
                 if hist['tMax'] < c[0]:
                     hist['tMax'] = c[0]
                     # TODO set FbDB
