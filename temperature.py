@@ -51,6 +51,7 @@ class Temperature(object):
             avg[1] = round(h_tot/h_cnt, 1)
         else:
             avg[1] = 0
+        module_logger.debug("get_today_avg() avg: " + str(avg))
         return avg
 
     def add_temp(self, add):
@@ -65,6 +66,7 @@ class Temperature(object):
             avg = self.get_today_avg()
         found = False
         max_hist = len(self._hist['history']) - 1
+        module_logger.debug("max_hist: " + str(max_hist))
         for hist in self._hist["history"][max_hist]:
             if hist["dt"] == self._today["date"]:
                 if hist['tMax'] < c[0]:
@@ -95,6 +97,8 @@ class Temperature(object):
                     firebase_db.add_temp(hist_today, new_temp)    # TODO set FbDB
                 found = True
                 break
+
+        module_logger.debug("found: " + str(found))
         if not found:
             run_time = dt.datetime.now()
             run_time = run_time.replace(microsecond=0)
