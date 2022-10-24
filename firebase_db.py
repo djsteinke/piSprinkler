@@ -79,8 +79,11 @@ def cleanup():
         if val['dt'] == "2020-01-01 00:00:00":
             keys_to_remove.append(key)
             rem_cnt += 1
+    module_logger.debug("remove " + str(rem_cnt) + "/" + str(tot_cnt))
+    rem_cnt = 0
     for val in keys_to_remove:
-        module_logger.debug("remove key: " + val + " - " + str(rem_cnt) + "/" + tot_cnt)
+        rem_cnt += 1
+        module_logger.debug("remove key: " + val + " - " + str(rem_cnt) + "/" + str(tot_cnt))
         #rem = snapshot.child(val)
         #rem.remove()
 
