@@ -31,7 +31,7 @@ network_up = True
 
 def add_temp(day_val, time_val=None):
     module_logger.debug(str(time_val))
-    if ref.child('history').get():
+    if ref.child('history').order_by_key().limit_to_last(1).get():
         snapshot = ref.child('history').order_by_key().limit_to_last(1).get()
         # module_logger.debug('snapshot exists')
         found = False
@@ -67,6 +67,17 @@ def add_temp(day_val, time_val=None):
                 new_history_tmp.set(time_val)
         except Exception as e:
             module_logger.error(str(e))
+
+
+def cleanup():
+    snapshot = ref.child('history').get()
+    keys_to_remove = []
+    for key, val in snapshot.items():
+        if val['dt'] == "2020-01-01 00:00:00":
+            keys_to_remove.append(key)
+    for val in keys_to_remove:
+        rem = snapshot.child(val)
+        rem.remove()
 
 
 def programs_listener(event):
