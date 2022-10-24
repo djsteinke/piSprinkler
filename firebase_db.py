@@ -84,8 +84,7 @@ def cleanup():
     for val in keys_to_remove:
         rem_cnt += 1
         module_logger.debug("remove key: " + val + " - " + str(rem_cnt) + "/" + str(tot_cnt))
-        #rem = snapshot.child(val)
-        #rem.remove()
+        snapshot.child(val).delete()
 
 
 def programs_listener(event):
