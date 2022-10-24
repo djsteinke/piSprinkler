@@ -72,12 +72,17 @@ def add_temp(day_val, time_val=None):
 def cleanup():
     snapshot = ref.child('history').get()
     keys_to_remove = []
+    rem_cnt = 0
+    tot_cnt = 0
     for key, val in snapshot.items():
+        tot_cnt += 1
         if val['dt'] == "2020-01-01 00:00:00":
             keys_to_remove.append(key)
+            rem_cnt += 1
     for val in keys_to_remove:
-        rem = snapshot.child(val)
-        rem.remove()
+        module_logger.debug("remove key: " + val + " - " + str(rem_cnt) + "/" + tot_cnt)
+        #rem = snapshot.child(val)
+        #rem.remove()
 
 
 def programs_listener(event):
