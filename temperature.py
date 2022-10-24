@@ -29,6 +29,7 @@ class Temperature(object):
         }
         self._hist = {"history": []}
         self._date = dt.date.today()
+        self._today["date"] = str(self._date)
         self.load()
 
     def get_today_avg(self):
