@@ -138,12 +138,6 @@ def internet_on():
 
 def start_listeners():
     global timer, programs_stream, reset_stream
-    try:
-        programs_stream = db_programs.listen(programs_listener)
-        module_logger.debug('streams open...')
-    except FirebaseError as e:
-        module_logger.error('failed to start listeners... ')
-
     while True:
         if internet_on():
             if reset_stream:
@@ -160,4 +154,4 @@ def start_listeners():
                 except FirebaseError as e:
                     module_logger.error('failed to start listeners... ')
                     reset_stream = True
-            sleep(15)
+        sleep(15)
