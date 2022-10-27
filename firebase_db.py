@@ -27,7 +27,7 @@ h = 0
 programs_stream = None
 timer = 0
 network_up = True
-reset_stream = False
+reset_stream = True
 
 
 def add_temp(day_val, time_val=None):
