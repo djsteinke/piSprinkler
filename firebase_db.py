@@ -27,6 +27,7 @@ h = 0
 programs_stream = None
 timer = 0
 network_up = True
+reset_stream = False
 
 
 def add_temp(day_val, time_val=None):
@@ -119,7 +120,7 @@ def set_next_run_time(prog_key, in_val):
 
 
 def internet_on():
-    global network_up
+    global network_up, reset_stream
     while True:
         try:
             request.urlopen("http://google.com")
@@ -129,23 +130,23 @@ def internet_on():
             return network_up
         except error.URLError as e:
             if network_up:
-                module_logger.error('Network DOWN. Reason: ' + e.reason)
+                module_logger.error('Network DOWN!!!')
             network_up = False
+            reset_stream = True
         sleep(15)
 
 
 def start_listeners():
-    global timer, programs_stream
+    global timer, programs_stream, reset_stream
     try:
         programs_stream = db_programs.listen(programs_listener)
         module_logger.debug('streams open...')
     except FirebaseError as e:
-        module_logger.error('failed to start listeners... ' + e.cause)
+        module_logger.error('failed to start listeners... ')
 
-    timer = 100
     while True:
         if internet_on():
-            if timer == 0:
+            if reset_stream:
                 try:
                     programs_stream.close()
                     module_logger.debug('streams closed...')
@@ -155,11 +156,8 @@ def start_listeners():
                 try:
                     programs_stream = db_programs.listen(programs_listener)
                     module_logger.debug('streams open...')
-                    timer = 100
+                    reset_stream = False
                 except FirebaseError as e:
-                    module_logger.error('failed to start listeners... ' + e.cause)
-                    timer = 0
+                    module_logger.error('failed to start listeners... ')
+                    reset_stream = True
             sleep(15)
-        else:
-            sleep(1)
-            timer -= 1 if timer > 0 else 0
