@@ -49,7 +49,7 @@ def get_sensor_temp():
 
 
 def get_temperature():
-    log_msg = ""
+    """
     try:
         x = requests.get('http://192.168.0.140:31000/getTemp', timeout=10)
         if not x.ok:
@@ -69,4 +69,5 @@ def get_temperature():
     except ExternalSystemError as err:
         log_msg = err
     module_logger.debug(log_msg)
+    """
     return get_sensor_temp()
