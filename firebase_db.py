@@ -6,7 +6,6 @@ import datetime as dt
 from time import sleep
 from urllib import request, error
 
-
 module_logger = logging.getLogger('main.firebase_db')
 
 databaseURL = "https://rn5notifications-default-rtdb.firebaseio.com/"
@@ -28,46 +27,55 @@ programs_stream = None
 timer = 0
 network_up = True
 reset_stream = True
+add_temp_list = []
 
 
-def add_temp(day_val, time_val=None):
-    module_logger.debug(str(time_val))
-    if ref.child('history').order_by_key().limit_to_last(1).get():
-        snapshot = ref.child('history').order_by_key().limit_to_last(1).get()
-        # module_logger.debug('snapshot exists')
-        found = False
-        for key, val in snapshot.items():
-            today = dt.date.today()
-            last_history = val
-            #last_history_ref = ref.child('history/' + key)
-            #last_history = last_history_ref.get()
-            if last_history['dt'] == str(today):
-                module_logger.debug('date found : ' + last_history['dt'] + " : " + key)
-                hist_ref = ref.child('history/' + key)
-                hist_ref.update(day_val)
-                new_history = hist_ref.child("history").push()
-                new_history.set(time_val)
-                found = True
-        if not found:
-            # module_logger.debug('date not found. add day.')
-            history_ref = ref.child('history')
-            new_history = history_ref.push()
-            new_history.set(day_val)
-            if time_val is not None:
-                new_history_tmp = new_history.child('history').push()
-                new_history_tmp.set(time_val)
-    else:
-        module_logger.debug('snapshot does not exist')
-        try:
-            history_ref = ref.child('history')
-            new_history = history_ref.push()
-            new_history.set(day_val)
-            if time_val is not None:
-                new_history_ref = new_history.child('history')
-                new_history_tmp = new_history_ref.push()
-                new_history_tmp.set(time_val)
-        except Exception as e:
-            module_logger.error(str(e))
+def add_temp(day_val_in, time_val_in=None):
+    module_logger.debug(str(time_val_in))
+    add_temp_list.append([day_val_in, time_val_in])
+    if network_up:
+        for vals in list(add_temp_list):
+            try:
+                day_val, time_val = vals
+                if ref.child('history').order_by_key().limit_to_last(1).get():
+                    snapshot = ref.child('history').order_by_key().limit_to_last(1).get()
+                    # module_logger.debug('snapshot exists')
+                    found = False
+                    for key, val in snapshot.items():
+                        today = dt.date.today()
+                        last_history = val
+                        # last_history_ref = ref.child('history/' + key)
+                        # last_history = last_history_ref.get()
+                        if last_history['dt'] == str(today):
+                            module_logger.debug('date found : ' + last_history['dt'] + " : " + key)
+                            hist_ref = ref.child('history/' + key)
+                            hist_ref.update(day_val)
+                            new_history = hist_ref.child("history").push()
+                            new_history.set(time_val)
+                            found = True
+                    if not found:
+                        # module_logger.debug('date not found. add day.')
+                        history_ref = ref.child('history')
+                        new_history = history_ref.push()
+                        new_history.set(day_val)
+                        if time_val is not None:
+                            new_history_tmp = new_history.child('history').push()
+                            new_history_tmp.set(time_val)
+                else:
+                    module_logger.debug('snapshot does not exist')
+                    try:
+                        history_ref = ref.child('history')
+                        new_history = history_ref.push()
+                        new_history.set(day_val)
+                        if time_val is not None:
+                            new_history_ref = new_history.child('history')
+                            new_history_tmp = new_history_ref.push()
+                            new_history_tmp.set(time_val)
+                    except Exception as e:
+                        module_logger.error(str(e))
+                add_temp_list.remove(vals)
+            except Exception as e:
+                module_logger.debug("Add temp failed while updating. Try again.", str(e))
 
 
 def cleanup():
@@ -93,8 +101,8 @@ def programs_listener(event):
     if event.data:
         module_logger.debug("event_type: " + str(event.event_type) + " data: " + str(event.data))
         # TODO : Load programs
-        #module_logger.debug("PROGRAMS: ")
-        #module_logger.debug(db_programs.get())
+        # module_logger.debug("PROGRAMS: ")
+        # module_logger.debug(db_programs.get())
 
 
 def set_temperature(in_val):
@@ -128,9 +136,9 @@ def internet_on():
                 module_logger.debug('Network UP.')
             network_up = True
             return network_up
-        except error.URLError as e:
+        except Exception as e:
             if network_up:
-                module_logger.error('Network DOWN!!!')
+                module_logger.error('Network DOWN!!!', str(e))
             network_up = False
             reset_stream = True
         sleep(15)
