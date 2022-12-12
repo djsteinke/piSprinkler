@@ -4,7 +4,7 @@ from firebase_admin.exceptions import FirebaseError
 import logging
 import datetime as dt
 from time import sleep
-from urllib import request, error
+from urllib import request
 
 module_logger = logging.getLogger('main.firebase_db')
 
@@ -136,9 +136,9 @@ def internet_on():
                 module_logger.debug('Network UP.')
             network_up = True
             return network_up
-        except Exception as e:
+        except:
             if network_up:
-                module_logger.error('Network DOWN!!!', str(e))
+                module_logger.error('Network DOWN!!!')
             network_up = False
             reset_stream = True
         sleep(15)
@@ -159,7 +159,7 @@ def start_listeners():
                     programs_stream = db_programs.listen(programs_listener)
                     module_logger.debug('streams open...')
                     reset_stream = False
-                except FirebaseError as e:
+                except FirebaseError:
                     module_logger.error('failed to start listeners... ')
                     reset_stream = True
         sleep(15)
