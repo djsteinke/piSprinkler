@@ -1,3 +1,5 @@
+import threading
+
 import firebase_admin
 from firebase_admin import db
 from firebase_admin.exceptions import FirebaseError
@@ -105,26 +107,57 @@ def programs_listener(event):
         # module_logger.debug(db_programs.get())
 
 
-def set_temperature(in_val):
-    global t
-    if in_val != t:
-        ref.child('temperature').set(in_val)
-        t = in_val
+temp_in_val = None
+humid_in_val = None
+next_run_time_list = []
 
 
-def set_humidity(in_val):
-    global h
-    if in_val != h:
-        ref.child('humidity').set(in_val)
-        h = in_val
-
-
-def set_next_run_time(prog_key, in_val):
+def set_temperature(in_val=None):
+    global t, temp_in_val
+    if in_val is not None:
+        temp_in_val = in_val
     try:
-        child = f"setup/programs/{str(prog_key)}/nextRunTime"
-        ref.child(child).set(in_val)
-    except Exception as e:
-        module_logger.error(str(e))
+        if network_up:
+            if in_val != t and temp_in_val is not None:
+                ref.child('temperature').set(temp_in_val)
+                t = temp_in_val
+            temp_in_val = None
+        else:
+            raise Exception("Network Down. Wait to update.")
+    except:
+        threading.Timer(300, set_temperature).start()
+
+
+def set_humidity(in_val=humid_in_val):
+    global h, humid_in_val
+    if in_val is not None:
+        humid_in_val = in_val
+    try:
+        if network_up:
+            if in_val != h and humid_in_val is not None:
+                ref.child('humidity').set(humid_in_val)
+                h = humid_in_val
+            humid_in_val = None
+        else:
+            raise Exception("Network Down. Wait to update.")
+    except:
+        threading.Timer(300, set_humidity).start()
+
+
+def set_next_run_time(prog_key=None, in_val=None):
+    if prog_key is not None:
+        next_run_time_list.append([prog_key, in_val])
+    try:
+        if network_up:
+            for update in list(next_run_time_list):
+                child = f"setup/programs/{str(update[0])}/nextRunTime"
+                ref.child(child).set(update[1])
+                next_run_time_list.remove(update)
+        else:
+            raise Exception("network down. try again later.")
+    except:
+        module_logger.error("error in updating program, nextRunTime", str(next_run_time_list))
+        threading.Timer(300, set_next_run_time).start()
 
 
 def internet_on():
