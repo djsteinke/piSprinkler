@@ -98,7 +98,8 @@ class Temperature(object):
                         "tMin": hist["tMin"]
                     }
                     # module_logger.debug("firebase_db.add_temp() 1")
-                    firebase_db.add_temp(hist_today, new_temp)    # TODO set FbDB
+                    if new_temp['h'] > -1:
+                        firebase_db.add_temp(hist_today, new_temp)    # TODO set FbDB
                 found = True
 
         module_logger.debug("found: " + str(found))
@@ -134,7 +135,8 @@ class Temperature(object):
                 }
             self._hist["history"].append(new_entry)
             # module_logger.debug("firebase_db.add_temp() 2")
-            firebase_db.add_temp(day_entry, time_entry)          # TODO Send to FbDB
+            if time_entry['h'] > -1:
+                firebase_db.add_temp(day_entry, time_entry)          # TODO Send to FbDB
 
         # Set min/max values
         if self._today["temp_max"] == 0 or self._today["temp_max"] < c[0]:
