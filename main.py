@@ -305,8 +305,8 @@ if __name__ == '__main__':
     except all:
         host_name = ip
     logger.info("machine host_name[" + host_name + "]")
-    threading.Timer(1, firebase_db.start_listeners).start()
+    threading.Timer(0.1, firebase_db.start_listeners).start()
     threading.Timer(1, check).start()
-    threading.Timer(1, t.start).start()
+    t.start()
     # threading.Timer(10, firebase_db.cleanup).start()
     app.run(host=host_name, port=port)
