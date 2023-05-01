@@ -7,7 +7,7 @@ import firebase_db
 from dateutil import parser
 import threading
 
-from static import get_temperature, fdir
+from static import get_sensor_temp, fdir
 from properties import temp_refresh_interval
 
 module_logger = logging.getLogger('main.temperature')
@@ -15,6 +15,7 @@ module_logger = logging.getLogger('main.temperature')
 f_t = os.path.join(fdir, 't.json')
 f_today = os.path.join(fdir, 'today_t.json')
 record_timer = None
+_temp_timer = None
 
 
 class Temperature(object):
@@ -30,120 +31,123 @@ class Temperature(object):
         self._hist = {"history": []}
         self._date = dt.date.today()
         self._today["date"] = str(self._date)
+        self._temperature = 0
+        self._humidity = -1
         self.load()
 
     def get_today_avg(self):
         t_tot = 0
         t_cnt = 0
         avg = [0.0, 0.0]
-        for t in self._today["temp"]:
-            t_tot += t
-            t_cnt += 1
-        if t_cnt > 0:
-            avg[0] = round(t_tot/t_cnt, 2)
-        else:
-            avg[0] = 0
-        h_tot = 0
-        h_cnt = 0
-        for h in self._today["humidity"]:
-            h_tot += h
-            h_cnt += 1
-        if h_cnt > 0:
-            avg[1] = round(h_tot/h_cnt, 1)
-        else:
-            avg[1] = 0
-        module_logger.debug("get_today_avg() avg: " + str(avg))
+        try:
+            for t in self._today["temp"]:
+                t_tot += t
+                t_cnt += 1
+            if t_cnt > 0:
+                avg[0] = round(t_tot/t_cnt, 2)
+            else:
+                avg[0] = 0
+            h_tot = 0
+            h_cnt = 0
+            for h in self._today["humidity"]:
+                h_tot += h
+                h_cnt += 1
+            if h_cnt > 0:
+                avg[1] = round(h_tot/h_cnt, 1)
+            else:
+                avg[1] = 0
+            module_logger.debug("get_today_avg() avg: " + str(avg))
+        except Exception as e:
+            module_logger.error("get_today_avg() : " + e.__str__())
         return avg
 
     def add_temp(self, add):
-        c = get_temperature()
-        firebase_db.set_temperature(round(c[0], 1))
-        firebase_db.set_humidity(round(c[1], 0))
-        avg = (0, 0)
-        if add:
-            module_logger.debug(f"add_temp() temp[{c[0]}] humidity[{c[1]}]")
-            self._today["temp"].append(c[0])
-            self._today["humidity"].append(c[1])
-            avg = self.get_today_avg()
-        found = False
-        max_hist = len(self._hist['history']) - 1
-        module_logger.debug("max_hist: " + str(max_hist))
-        if max_hist > 0:
-            hist = self._hist["history"][max_hist]
-            # module_logger.debug("hist: " + str(hist))
-            if hist["dt"] == self._today["date"]:
-                # module_logger.debug("dt exists")
-                if hist['tMax'] < c[0]:
-                    hist['tMax'] = c[0]
-                    # TODO set FbDB
-                if hist['tMin'] > c[0]:
-                    hist['tMin'] = c[0]
-                    # TODO set FbDB
+        # c = get_temperature()
+        if self._humidity >= 0:
+            try:
+                c = [self._temperature, self._humidity]
+                firebase_db.set_temperature(round(c[0], 1))
+                firebase_db.set_humidity(round(c[1], 0))
+                avg = (0, 0)
                 if add:
-                    hist['tAvg'] = avg[0]
-                    hist['hAvg'] = avg[1]
+                    # module_logger.debug(f"add_temp() temp[{c[0]}] humidity[{c[1]}]")
+                    self._today["temp"].append(c[0])
+                    self._today["humidity"].append(c[1])
+                    avg = self.get_today_avg()
+                found = False
+                max_hist = len(self._hist['history']) - 1
+               #  module_logger.debug("max_hist: " + str(max_hist))
+                if max_hist > 0:
+                    hist = self._hist["history"][max_hist]
+                    if hist["dt"] == self._today["date"]:
+                        if hist['tMax'] < c[0]:
+                            hist['tMax'] = c[0]
+                        if hist['tMin'] > c[0]:
+                            hist['tMin'] = c[0]
+                        if add:
+                            hist['tAvg'] = avg[0]
+                            hist['hAvg'] = avg[1]
+                            run_time = dt.datetime.now()
+                            run_time = run_time.replace(microsecond=0)
+                            new_temp = {
+                                "time": str(run_time),
+                                "t": c[0],
+                                "h": c[1]
+                            }
+                            hist['history'].append(new_temp)
+                            hist_today = {
+                                "dt": hist["dt"],
+                                "tAvg": hist["tAvg"],
+                                "hAvg": hist["hAvg"],
+                                "tMax": hist["tMax"],
+                                "tMin": hist["tMin"]
+                            }
+                            if new_temp['h'] > -1:
+                                firebase_db.add_temp(hist_today, new_temp)
+                        found = True
+
+                if not found:
                     run_time = dt.datetime.now()
                     run_time = run_time.replace(microsecond=0)
-                    new_temp = {
-                        "time": str(run_time),
-                        "t": c[0],
-                        "h": c[1]
+                    new_entry = {
+                        "dt": self._today["date"],
+                        "tAvg": avg[0],
+                        "hAvg": avg[1],
+                        "tMax": c[0],
+                        "tMin": c[0],
+                        "history": []
                     }
-                    hist['history'].append(new_temp)
-                    hist_today = {
-                        "dt": hist["dt"],
-                        "tAvg": hist["tAvg"],
-                        "hAvg": hist["hAvg"],
-                        "tMax": hist["tMax"],
-                        "tMin": hist["tMin"]
+                    day_entry = {
+                        "dt": self._today["date"],
+                        "tAvg": avg[0],
+                        "hAvg": avg[1],
+                        "tMax": c[0],
+                        "tMin": c[0]
                     }
-                    # module_logger.debug("firebase_db.add_temp() 1")
-                    if new_temp['h'] > -1:
-                        firebase_db.add_temp(hist_today, new_temp)    # TODO set FbDB
-                found = True
+                    time_entry = None
+                    if add:
+                        new_entry['history'].append({
+                                "time": str(run_time),
+                                "t": c[0],
+                                "h": c[1]
+                            })
+                        time_entry = {
+                            "time": str(run_time),
+                            "t": c[0],
+                            "h": c[1]
+                        }
+                    self._hist["history"].append(new_entry)
+                    if time_entry['h'] > -1:
+                        firebase_db.add_temp(day_entry, time_entry)
 
-        module_logger.debug("found: " + str(found))
-        if not found:
-            run_time = dt.datetime.now()
-            run_time = run_time.replace(microsecond=0)
-            new_entry = {
-                "dt": self._today["date"],
-                "tAvg": avg[0],
-                "hAvg": avg[1],
-                "tMax": c[0],
-                "tMin": c[0],
-                "history": []
-            }
-            day_entry = {
-                "dt": self._today["date"],
-                "tAvg": avg[0],
-                "hAvg": avg[1],
-                "tMax": c[0],
-                "tMin": c[0]
-            }
-            time_entry = None
-            if add:
-                new_entry['history'].append({
-                        "time": str(run_time),
-                        "t": c[0],
-                        "h": c[1]
-                    })
-                time_entry = {
-                    "time": str(run_time),
-                    "t": c[0],
-                    "h": c[1]
-                }
-            self._hist["history"].append(new_entry)
-            # module_logger.debug("firebase_db.add_temp() 2")
-            if time_entry['h'] > -1:
-                firebase_db.add_temp(day_entry, time_entry)          # TODO Send to FbDB
-
-        # Set min/max values
-        if self._today["temp_max"] == 0 or self._today["temp_max"] < c[0]:
-            self._today["temp_max"] = c[0]
-        if self._today["temp_min"] == 0 or self._today["temp_min"] > c[0]:
-            self._today["temp_min"] = c[0]
-        self.save()
+                # Set min/max values
+                if self._today["temp_max"] == 0 or self._today["temp_max"] < c[0]:
+                    self._today["temp_max"] = c[0]
+                if self._today["temp_min"] == 0 or self._today["temp_min"] > c[0]:
+                    self._today["temp_min"] = c[0]
+                self.save()
+            except Exception as e:
+                module_logger.error("add_temp() : " + e.__str__())
 
     def reset_today(self):
         module_logger.debug("reset_today()")
@@ -194,18 +198,37 @@ class Temperature(object):
 
     def record(self):
         global record_timer
-        if dt.date.today() != self._date:
-            self.reset_today()
-            self._date = dt.date.today()
-        self.add_temp(True)
-        if record_timer is not None:
-            record_timer.cancel()
+        try:
+            if dt.date.today() != self._date:
+                self.reset_today()
+                self._date = dt.date.today()
+            self.add_temp(True)
+            if record_timer is not None:
+                record_timer.cancel()
+        except Exception as e:
+            module_logger.error("record() : " + e.__str__())
         record_timer = threading.Timer(temp_refresh_interval, self.record)
         record_timer.start()
 
+    def _temp(self):
+        global _temp_timer
+        try:
+            if _temp_timer is not None:
+                _temp_timer.cancel()
+            c = get_sensor_temp()
+            self._temperature = c[0]
+            self._humidity = c[1]
+        except Exception as e:
+            if self._humidity >= 0:
+                module_logger.error("_temp() : Sensor Error : " + e.__str__())
+            self._humidity = -1
+        _temp_timer = threading.Timer(15, self._temp)
+        _temp_timer.start()
+
     def start(self):
-        self.record()
         module_logger.debug("start")
+        threading.Timer(5, self.record)
+        threading.Timer(1, self._temp)
 
     @property
     def hist(self):

@@ -99,9 +99,10 @@ def cleanup():
 
 
 def programs_listener(event):
-    module_logger.debug('firebase listener...')
-    if event.data:
-        module_logger.debug("event_type: " + str(event.event_type) + " data: " + str(event.data))
+    tmp = 1
+    # module_logger.debug('firebase listener...')
+    #if event.data:
+    #    module_logger.debug("event_type: " + str(event.event_type) + " data: " + str(event.data))
         # TODO : Load programs
         # module_logger.debug("PROGRAMS: ")
         # module_logger.debug(db_programs.get())

@@ -51,27 +51,30 @@ delay = "2021-01-01 00:00:01"
 
 def check():
     global p_running, p
-    delay_date = parser.parse(s.setup['delay'])
-    prog_key = 0
-    for program in s.setup['programs']:
-        next_date = parser.parse(program["nextRunTime"])
-        if next_date < dt.datetime.now() and not p_running:
-            interval = 1
-            if next_date >= delay_date:
-                interval = program["interval"]
-                p = Program(program, s.setup, t.hist, program_complete)
-                if program['active']:
-                    p_running = True
-                    p.start()
-            start_time = parser.parse(program["startTime"])
-            next_date = dt.datetime.now()
-            next_date += dt.timedelta(days=interval)
-            next_date = next_date.replace(hour=start_time.hour, minute=start_time.minute, second=0, microsecond=0)
-            program["nextRunTime"] = str(next_date)
-            firebase_db.set_next_run_time(prog_key, str(next_date))
-            logger.info(f"next run {next_date}")
-            s.save()
-        prog_key += 1
+    try:
+        delay_date = parser.parse(s.setup['delay'])
+        prog_key = 0
+        for program in s.setup['programs']:
+            next_date = parser.parse(program["nextRunTime"])
+            if next_date < dt.datetime.now() and not p_running:
+                interval = 1
+                if next_date >= delay_date:
+                    interval = program["interval"]
+                    p = Program(program, s.setup, t.hist, program_complete)
+                    if program['active']:
+                        p_running = True
+                        p.start()
+                start_time = parser.parse(program["startTime"])
+                next_date = dt.datetime.now()
+                next_date += dt.timedelta(days=interval)
+                next_date = next_date.replace(hour=start_time.hour, minute=start_time.minute, second=0, microsecond=0)
+                program["nextRunTime"] = str(next_date)
+                firebase_db.set_next_run_time(prog_key, str(next_date))
+                logger.info(f"next run {next_date}")
+                s.save()
+            prog_key += 1
+    except Exception as e:
+        print("check() ERROR: " + str(e))
     timer = threading.Timer(60, check)
     timer.start()
 
