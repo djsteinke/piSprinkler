@@ -230,9 +230,12 @@ class Temperature(object):
         _temp_timer.start()
 
     def start(self):
+        global record_timer, _temp_timer
         module_logger.debug("start")
-        threading.Timer(5, self.record)
-        threading.Timer(1, self._temp)
+        record_timer = threading.Timer(temp_refresh_interval, self.record)
+        record_timer.start()
+        _temp_timer = threading.Timer(1, self._temp)
+        _temp_timer.start()
 
     @property
     def hist(self):
