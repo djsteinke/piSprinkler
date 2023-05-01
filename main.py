@@ -25,7 +25,7 @@ app = Flask(__name__)
 logger = logging.getLogger('main')
 logger.setLevel(logging.DEBUG)
 # create file handler which logs even debug messages
-fh = logging.FileHandler('log.log')
+fh = logging.FileHandler('/home/pi/projects/piSprinkler/log.log')
 fh.setLevel(get_logging_level())
 # create console handler with a higher log level
 ch = logging.StreamHandler()

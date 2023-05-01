@@ -13,7 +13,7 @@ module_logger = logging.getLogger('main.firebase_db')
 databaseURL = "https://rn5notifications-default-rtdb.firebaseio.com/"
 appKey = "sprinkler"
 
-cred_obj = firebase_admin.credentials.Certificate("/home/pi/firebaseKey.json")
+cred_obj = firebase_admin.credentials.Certificate("/home/pi/projects/firebaseKey.json")
 default_app = firebase_admin.initialize_app(cred_obj, {
     'databaseURL': databaseURL
 })
