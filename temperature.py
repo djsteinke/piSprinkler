@@ -212,6 +212,8 @@ class Temperature(object):
 
     def _temp(self):
         global _temp_timer
+        if self._humidity == -2:
+            module_logger.debug("_temp() : Sensor Start")
         try:
             if _temp_timer is not None:
                 _temp_timer.cancel()
