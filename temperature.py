@@ -216,6 +216,8 @@ class Temperature(object):
             if _temp_timer is not None:
                 _temp_timer.cancel()
             c = get_sensor_temp()
+            if self._humidity < 0:
+                module_logger.debug("_temp() : Sensor Working")
             self._temperature = c[0]
             self._humidity = c[1]
         except Exception as e:
