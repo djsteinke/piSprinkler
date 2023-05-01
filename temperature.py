@@ -32,7 +32,7 @@ class Temperature(object):
         self._date = dt.date.today()
         self._today["date"] = str(self._date)
         self._temperature = 0
-        self._humidity = -1
+        self._humidity = -2
         self.load()
 
     def get_today_avg(self):
@@ -221,7 +221,7 @@ class Temperature(object):
             self._temperature = c[0]
             self._humidity = c[1]
         except Exception as e:
-            if self._humidity >= 0:
+            if self._humidity >= 0 or self._humidity == -2:
                 module_logger.error("_temp() : Sensor Error : " + e.__str__())
             self._humidity = -1
         _temp_timer = threading.Timer(15, self._temp)
