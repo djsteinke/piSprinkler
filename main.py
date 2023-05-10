@@ -79,6 +79,10 @@ def check():
     timer.start()
 
 
+def get_timestamp(val):
+    return val if val < 9000000000 else val/1000
+
+
 def check_fb():
     global p_running, p
     try:
@@ -87,8 +91,7 @@ def check_fb():
         for key in firebase_db.setup['programs']:
             program = firebase_db.setup['programs'][key]
             logger.debug(program)
-            next_time = program['nextRunTime'] if program['nextRunTime'] < 9000000000 else program['nextRunTime']/1000
-            next_date = dt.datetime.fromtimestamp(next_time)
+            next_date = dt.datetime.fromtimestamp(get_timestamp(program['nextRunTime']))
             logger.debug(str(next_date))
             if next_date < dt.datetime.now() and not p_running:
                 interval = 1
@@ -99,7 +102,7 @@ def check_fb():
                     if program['active']:
                         p_running = True
                         p.start()
-                start_time = dt.datetime.fromtimestamp(program["startTime"])
+                start_time = dt.datetime.fromtimestamp(get_timestamp(program["startTime"]))
                 next_date = dt.datetime.now()
                 next_date += dt.timedelta(days=interval)
                 next_date = next_date.replace(hour=start_time.hour, minute=start_time.minute, second=0, microsecond=0)
