@@ -99,7 +99,7 @@ def check_fb():
                     if program['active']:
                         p_running = True
                         p.start()
-                start_time = parser.parse(program["startTime"])
+                start_time = dt.datetime.fromtimestamp(program["startTime"])
                 next_date = dt.datetime.now()
                 next_date += dt.timedelta(days=interval)
                 next_date = next_date.replace(hour=start_time.hour, minute=start_time.minute, second=0, microsecond=0)
