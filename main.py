@@ -79,6 +79,34 @@ def check():
     timer.start()
 
 
+def check_fb():
+    global p_running, p
+    try:
+        delay_date = dt.datetime.fromtimestamp(firebase_db.setup['delay'])
+        for program in firebase_db.setup['programs']:
+            next_date = dt.datetime.fromtimestamp(program['nextRunTime'])
+            if next_date < dt.datetime.now() and not p_running:
+                interval = 1
+                if next_date >= delay_date:
+                    interval = program["interval"]
+                    tempHistory = firebase_db.get_temp_history()
+                    p = Program(program, firebase_db.setup, tempHistory, program_complete)
+                    if program['active']:
+                        p_running = True
+                        p.start()
+                start_time = parser.parse(program["startTime"])
+                next_date = dt.datetime.now()
+                next_date += dt.timedelta(days=interval)
+                next_date = next_date.replace(hour=start_time.hour, minute=start_time.minute, second=0, microsecond=0)
+                program["nextRunTime"] = str(next_date)
+                firebase_db.set_next_run_time(program["name"], next_date.timestamp())
+                logger.info(f"next run {next_date}")
+    except Exception as e:
+        print("check() ERROR: " + str(e))
+    timer = threading.Timer(60, check)
+    timer.start()
+
+
 def program_complete():
     global p_running
     p_running = False
@@ -306,7 +334,7 @@ if __name__ == '__main__':
         host_name = ip
     logger.info("machine host_name[" + host_name + "]")
     threading.Timer(0.1, firebase_db.start_listeners).start()
-    threading.Timer(1, check).start()
-    t.start()
+    threading.Timer(1, check_fb).start()
+    # t.start() # removed temperature reading moving it to pico w
     # threading.Timer(10, firebase_db.cleanup).start()
     app.run(host=host_name, port=port)

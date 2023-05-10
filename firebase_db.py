@@ -1,3 +1,4 @@
+from datetime import datetime
 import threading
 
 import firebase_admin
@@ -6,10 +7,11 @@ from firebase_admin.exceptions import FirebaseError
 import logging
 import datetime as dt
 from time import sleep
-from urllib import request
+import requests
 
 module_logger = logging.getLogger('main.firebase_db')
 
+temperatureURL = "https://pitemperature-a22b2-default-rtdb.firebaseio.com"
 databaseURL = "https://rn5notifications-default-rtdb.firebaseio.com/"
 appKey = "sprinkler"
 
@@ -21,15 +23,19 @@ default_app = firebase_admin.initialize_app(cred_obj, {
 ref = db.reference(appKey)
 
 db_programs = ref.child('setup/programs')
+db_setup = ref.child('setupFB')
 
 t = 0.0
 h = 0
+t_start = 48*60*60
 
+setup_stream = None
 programs_stream = None
 timer = 0
 network_up = True
 reset_stream = True
 add_temp_list = []
+setup = {}
 
 
 def add_temp(day_val_in, time_val_in=None):
@@ -99,13 +105,22 @@ def cleanup():
 
 
 def programs_listener(event):
-    tmp = 1
-    # module_logger.debug('firebase listener...')
-    #if event.data:
-    #    module_logger.debug("event_type: " + str(event.event_type) + " data: " + str(event.data))
-        # TODO : Load programs
-        # module_logger.debug("PROGRAMS: ")
-        # module_logger.debug(db_programs.get())
+    if event.data:
+        module_logger.debug('programs listener...')
+
+
+def setup_listener(event):
+    global setup
+    if event.data:
+        setup = event.data
+        module_logger.debug('setup listener...')
+
+
+def get_temp_history():
+    fromTime = datetime.now().timestamp() - t_start  # 48hrs
+    url = temperatureURL + f'/history.json?orderBy="dt"&startAt={int(fromTime)}'
+    x = requests.get(url)
+    return x.json()
 
 
 temp_in_val = None
@@ -151,7 +166,7 @@ def set_next_run_time(prog_key=None, in_val=None):
     try:
         if network_up:
             for update in list(next_run_time_list):
-                child = f"setup/programs/{str(update[0])}/nextRunTime"
+                child = f"setupFB/programs/{update[0]}/nextRunTime"
                 ref.child(child).set(update[1])
                 next_run_time_list.remove(update)
         else:
@@ -165,7 +180,7 @@ def internet_on():
     global network_up, reset_stream
     while True:
         try:
-            request.urlopen("http://google.com")
+            requests.get("https://google.com")
             if not network_up:
                 module_logger.debug('Network UP.')
             network_up = True
@@ -179,18 +194,18 @@ def internet_on():
 
 
 def start_listeners():
-    global timer, programs_stream, reset_stream
+    global timer, setup_stream, reset_stream
     while True:
         if internet_on():
             if reset_stream:
                 try:
-                    programs_stream.close()
+                    setup_stream.close()
                     module_logger.debug('streams closed...')
                 except:
                     module_logger.debug('no streams to close...')
                     pass
                 try:
-                    programs_stream = db_programs.listen(programs_listener)
+                    setup_stream = db_setup.listen(setup_listener)
                     module_logger.debug('streams open...')
                     reset_stream = False
                 except FirebaseError:
