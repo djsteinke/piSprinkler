@@ -103,7 +103,8 @@ class ProgramFB(object):
         date -= dt.timedelta(days=1)
         act_temp = 0
         act_cnt = 0
-        for t in self._t:
+        for key in self._t:
+            t = self._t[key]
             act_temp += t['t']
             act_cnt += 1
         min_cnt = int(firebase_db.t_start/(20*60) * 0.85)
