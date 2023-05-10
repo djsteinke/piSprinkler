@@ -84,7 +84,8 @@ def check_fb():
     try:
         delay_date = dt.datetime.fromtimestamp(firebase_db.setup['delay'])
         for program in firebase_db.setup['programs']:
-            next_date = dt.datetime.fromtimestamp(program['nextRunTime'])
+            next_time = program['nextRunTime'] if program['nextRunTime'] < 9000000000 else program['nextRunTime']/1000
+            next_date = dt.datetime.fromtimestamp(next_time)
             if next_date < dt.datetime.now() and not p_running:
                 interval = 1
                 if next_date >= delay_date:
