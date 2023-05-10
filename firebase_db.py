@@ -109,11 +109,15 @@ def programs_listener(event):
         module_logger.debug('programs listener...')
 
 
+setup_loaded = False
 def setup_listener(event):
     global setup
     if event.data:
         setup = event.data
-        module_logger.debug('setup listener...')
+        if not setup_loaded:
+            module_logger.debug(setup)
+        else:
+            module_logger.debug('setup listener...')
 
 
 def get_temp_history():
