@@ -89,8 +89,8 @@ def check_fb():
         logger.debug("check_fb()")
         delay_date = dt.datetime.fromtimestamp(firebase_db.setup['delay'])
         for key in firebase_db.setup['programs']:
+            logger.debug(key)
             program = firebase_db.setup['programs'][key]
-            logger.debug(program)
             next_date = dt.datetime.fromtimestamp(get_timestamp(program['nextRunTime']))
             logger.debug(str(next_date))
             if next_date < dt.datetime.now() and not p_running:
@@ -106,7 +106,8 @@ def check_fb():
                 next_date = dt.datetime.now()
                 next_date += dt.timedelta(days=interval)
                 next_date = next_date.replace(hour=start_time.hour, minute=start_time.minute, second=0, microsecond=0)
-                program["nextRunTime"] = str(next_date)
+                logger.debug(str(next_date))
+                program["nextRunTime"] = next_date.timestamp()
                 firebase_db.set_next_run_time(program["name"], next_date.timestamp())
                 logger.info(f"next run {next_date}")
     except Exception as e:

@@ -39,7 +39,7 @@ setup = {}
 
 
 def add_temp(day_val_in, time_val_in=None):
-    module_logger.debug(str(time_val_in))
+    module_logger.debug("add_temp() " + str(time_val_in))
     add_temp_list.append([day_val_in, time_val_in])
     if network_up:
         for vals in list(add_temp_list):
@@ -80,7 +80,7 @@ def add_temp(day_val_in, time_val_in=None):
                             new_history_tmp = new_history_ref.push()
                             new_history_tmp.set(time_val)
                     except Exception as e:
-                        module_logger.error(str(e))
+                        module_logger.error("add_temp() " + str(e))
                 add_temp_list.remove(vals)
             except Exception as e:
                 module_logger.debug("Add temp failed while updating. Try again.", str(e))
