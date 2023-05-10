@@ -10,6 +10,7 @@ import RPi.GPIO as GPIO
 from flask import Flask, request, jsonify, send_from_directory
 
 from properties import port, ip
+from programFB import ProgramFB
 from program import Program
 from temperature import Temperature
 from setup import Setup
@@ -43,6 +44,7 @@ GPIO.setwarnings(False)
 
 t = Temperature()
 s = Setup()
+pFB = ProgramFB(None, None, None, None)
 p = Program(None, None, None, None)
 p_running = False
 
@@ -98,7 +100,7 @@ def check_fb():
                 if next_date >= delay_date:
                     interval = program["interval"]
                     tempHistory = firebase_db.get_temp_history()
-                    p = Program(program, firebase_db.setup, tempHistory, program_complete)
+                    p = ProgramFB(program, firebase_db.setup, tempHistory, program_complete)
                     if program['active']:
                         p_running = True
                         p.start()

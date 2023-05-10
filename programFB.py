@@ -9,11 +9,10 @@ import firebase_db
 module_logger = logging.getLogger('main.program')
 
 
-class Program(object):
-    def __init__(self, p, t, callback):
+class ProgramFB(object):
+    def __init__(self, p, s, t, callback):
         self._p = p
-        if firebase_db.db_setup['programs']:
-            self._setup = firebase_db.db_setup
+        self._setup = s
         self._t = t
         self._relay = None
         self._callback = callback
