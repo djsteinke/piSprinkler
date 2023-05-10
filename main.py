@@ -338,7 +338,7 @@ if __name__ == '__main__':
         host_name = ip
     logger.info("machine host_name[" + host_name + "]")
     threading.Timer(0.1, firebase_db.start_listeners).start()
-    threading.Timer(15, check_fb).start()
+    threading.Timer(5, check_fb).start()
     # t.start() # removed temperature reading moving it to pico w
     # threading.Timer(10, firebase_db.cleanup).start()
     app.run(host=host_name, port=port)
