@@ -82,6 +82,7 @@ def check():
 def check_fb():
     global p_running, p
     try:
+        logger.debug("check_fb()")
         delay_date = dt.datetime.fromtimestamp(firebase_db.setup['delay'])
         for program in firebase_db.setup['programs']:
             next_time = program['nextRunTime'] if program['nextRunTime'] < 9000000000 else program['nextRunTime']/1000
@@ -335,7 +336,7 @@ if __name__ == '__main__':
         host_name = ip
     logger.info("machine host_name[" + host_name + "]")
     threading.Timer(0.1, firebase_db.start_listeners).start()
-    threading.Timer(1, check_fb).start()
+    threading.Timer(15, check_fb).start()
     # t.start() # removed temperature reading moving it to pico w
     # threading.Timer(10, firebase_db.cleanup).start()
     app.run(host=host_name, port=port)
