@@ -115,7 +115,8 @@ def check_fb():
                 firebase_db.set_next_run_time(program["name"], next_date.timestamp())
                 logger.info(f"next run {next_date}")
     except Exception as e:
-        logger.error("check_fb()", str(traceback.print_exc()))
+        msg = traceback.extract_stack()
+        logger.error("check_fb()", msg)
     timer = threading.Timer(60, check)
     timer.start()
 
