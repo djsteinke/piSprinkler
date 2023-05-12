@@ -117,7 +117,7 @@ def check_fb():
     except Exception as e:
         msg = ''.join(traceback.format_exception(None, e, e.__traceback__))
         logger.error("check_fb()", msg)
-    timer = threading.Timer(60, check)
+    timer = threading.Timer(60, check_fb)
     timer.start()
 
 
