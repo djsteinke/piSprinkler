@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 import threading
 
@@ -129,9 +130,11 @@ setup_loaded = False
 def setup_listener(event):
     global setup, setup_loaded
     if event.data:
-        module_logger.debug("event: ")
-        module_logger.debug(str(event))
-        setup = event.data
+        if event.path == "/":
+            setup = event.data
+        else:
+            path = re.sub(r'^/', '', event.path)
+            setup[path] = event.data
         if not setup_loaded:
             module_logger.debug("setup loaded: ")
             module_logger.debug(setup)
@@ -218,9 +221,7 @@ def internet_on():
 
 
 def start_listeners():
-    global timer, setup_stream, reset_stream, setup
-    if internet_on():
-        setup = ref.get()
+    global timer, setup_stream, reset_stream
     while True:
         if internet_on():
             if reset_stream:
@@ -231,7 +232,7 @@ def start_listeners():
                     module_logger.debug('no streams to close...')
                     pass
                 try:
-                    setup_stream = db_programs.listen(programs_listener)
+                    setup_stream = ref.listen(setup_listener)
                     module_logger.debug('streams open...')
                     reset_stream = False
                 except FirebaseError:
