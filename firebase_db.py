@@ -230,7 +230,6 @@ def internet_on():
 
 def start_listeners():
     global timer, setup_stream, reset_stream
-    cleanup_json()
     while True:
         if internet_on():
             if reset_stream:
