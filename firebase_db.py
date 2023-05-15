@@ -13,7 +13,7 @@ module_logger = logging.getLogger('main.firebase_db')
 
 temperatureURL = "https://pitemperature-a22b2-default-rtdb.firebaseio.com"
 databaseURL = "https://rn5notifications-default-rtdb.firebaseio.com/"
-appKey = "sprinkler"
+appKey = "sprinkler/setupFB"
 
 cred_obj = firebase_admin.credentials.Certificate("/home/pi/projects/firebaseKey.json")
 default_app = firebase_admin.initialize_app(cred_obj, {
@@ -22,8 +22,12 @@ default_app = firebase_admin.initialize_app(cred_obj, {
 
 ref = db.reference(appKey)
 
-db_programs = ref.child('setup/programs')
-db_setup = ref.child('setupFB')
+db_average_temps = ref.child('averageTemps')
+db_delay = ref.child('delay')
+db_programs = ref.child('programs')
+db_watering_times = ref.child('wateringTimes')
+db_zones = ref.child('zones')
+
 
 t = 0.0
 h = 0
@@ -36,6 +40,9 @@ network_up = True
 reset_stream = True
 add_temp_list = []
 setup = {}
+delay = dt.datetime.now()
+average_temps = []
+watering_times = []
 
 
 def add_temp(day_val_in, time_val_in=None):
@@ -106,10 +113,17 @@ def cleanup():
 
 def programs_listener(event):
     if event.data:
-        module_logger.debug('programs listener...')
+        module_logger.debug('programs listener... ' + event.data)
+
+
+def zones_listener(event):
+    if event.data:
+        module_logger.debug('zones listener... ' + event.data)
 
 
 setup_loaded = False
+
+
 def setup_listener(event):
     global setup, setup_loaded
     if event.data:
@@ -202,7 +216,9 @@ def internet_on():
 
 
 def start_listeners():
-    global timer, setup_stream, reset_stream
+    global timer, setup_stream, reset_stream, setup
+    if internet_on():
+        setup = ref.get()
     while True:
         if internet_on():
             if reset_stream:
@@ -213,7 +229,7 @@ def start_listeners():
                     module_logger.debug('no streams to close...')
                     pass
                 try:
-                    setup_stream = db_setup.listen(setup_listener)
+                    setup_stream = db_programs.listen(programs_listener)
                     module_logger.debug('streams open...')
                     reset_stream = False
                 except FirebaseError:
