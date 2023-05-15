@@ -112,6 +112,13 @@ def cleanup():
         ref.child('history').child(val).delete()
 
 
+def cleanup_json():
+    for p_name in setup["programs"]:
+        for i in range(0, len(setup["programs"][p_name]['steps'])):
+            ref.child(f"programs/{p_name}/steps/{str(i)}/jsonString").delete()
+
+
+
 def programs_listener(event):
     if event.data:
         module_logger.debug('path: ' + str(event.path))
@@ -222,6 +229,7 @@ def internet_on():
 
 def start_listeners():
     global timer, setup_stream, reset_stream
+    cleanup_json()
     while True:
         if internet_on():
             if reset_stream:
