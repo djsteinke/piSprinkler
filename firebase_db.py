@@ -113,12 +113,12 @@ def cleanup():
 
 def programs_listener(event):
     if event.data:
-        module_logger.debug('programs listener... ' + event.data)
+        module_logger.debug('programs listener... ' + str(event.data))
 
 
 def zones_listener(event):
     if event.data:
-        module_logger.debug('zones listener... ' + event.data)
+        module_logger.debug('zones listener... ' + str(event.data))
 
 
 setup_loaded = False
