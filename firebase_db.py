@@ -128,7 +128,7 @@ def setup_listener(event):
     global setup, setup_loaded
     if event.data:
         module_logger.debug("event: ")
-        module_logger.debug(event)
+        module_logger.debug(str(event))
         setup = event.data
         if not setup_loaded:
             module_logger.debug("setup loaded: ")
