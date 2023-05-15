@@ -113,6 +113,7 @@ def cleanup():
 
 def programs_listener(event):
     if event.data:
+        module_logger.debug('programs listener... ' + str(event))
         module_logger.debug('programs listener... ' + str(event.data))
 
 
