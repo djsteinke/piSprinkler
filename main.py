@@ -91,14 +91,13 @@ def check_fb():
     global p_running, p
     try:
         logger.debug("check_fb()")
-        delay_timestamp = firebase_db.setup.delay if firebase_db.setup.delay > 0 else 1684254000000.0
+        delay_timestamp = firebase_db.setup['delay'] if firebase_db.setup['delay'] > 0 else 1684254000000.0
         delay_date = dt.datetime.fromtimestamp(get_timestamp(delay_timestamp))
         for key in firebase_db.setup['programs']:
             logger.debug(key)
             program = firebase_db.setup['programs'][key]
             next_date = dt.datetime.fromtimestamp(get_timestamp(program['nextRunTime']))
-            logger.debug(f"next_date: {str(next_date)}, running: {str(p_running)}, "
-                         f"now: {str(dt.datetime.now())}, delay: {str(delay_date)}")
+            logger.debug(f"next_date: {str(next_date)}, running: {str(p_running)}, now: {str(dt.datetime.now())}, delay: {str(delay_date)}")
             if next_date < dt.datetime.now() and not p_running:
                 interval = 1
                 if next_date >= delay_date:
