@@ -92,7 +92,7 @@ def check_fb():
     try:
         logger.debug("check_fb()")
         delay_timestamp = firebase_db.setup['delay'] if firebase_db.setup['delay'] > 0 else 1684254000000.0
-        delay_date = dt.datetime.fromtimestamp(delay_timestamp)
+        delay_date = dt.datetime.fromtimestamp(get_timestamp(delay_timestamp))
         for key in firebase_db.setup['programs']:
             logger.debug(key)
             program = firebase_db.setup['programs'][key]
