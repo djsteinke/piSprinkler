@@ -91,6 +91,7 @@ def check_fb():
     global p_running, p
     try:
         logger.debug("check_fb()")
+        logger.debug(firebase_db.setup['delay'])
         delay_timestamp = firebase_db.setup['delay'] if firebase_db.setup['delay'] > 0 else 1684254000000.0
         delay_date = dt.datetime.fromtimestamp(get_timestamp(delay_timestamp))
         for key in firebase_db.setup['programs']:
@@ -108,13 +109,13 @@ def check_fb():
                         p_running = True
                         p.start()
                 start_time = dt.datetime.fromtimestamp(get_timestamp(program["startTime"]))
+                logger.debug(f"start_time : {str(start_time)}")
                 next_date = dt.datetime.now()
                 next_date += dt.timedelta(days=interval)
                 next_date = next_date.replace(hour=start_time.hour, minute=start_time.minute, second=0, microsecond=0)
-                logger.debug(str(next_date))
                 program["nextRunTime"] = next_date.timestamp()
                 firebase_db.set_next_run_time(program["name"], next_date.timestamp()*1000)
-                logger.info(f"next run {next_date}")
+                logger.info(f"{program['name']} : next run {next_date}")
     except Exception as e:
         msg = ''.join(traceback.format_exception(None, e, e.__traceback__))
         logger.error("check_fb()", msg)
