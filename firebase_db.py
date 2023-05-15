@@ -113,11 +113,12 @@ setup_loaded = False
 def setup_listener(event):
     global setup, setup_loaded
     if event.data:
-        print("event", str(event))
-        print("data", str(event.data))
+        module_logger.debug("event: ")
+        module_logger.debug(event)
         setup = event.data
         if not setup_loaded:
-            module_logger.debug("setup loaded", str(setup))
+            module_logger.debug("setup loaded: ")
+            module_logger.debug(setup)
             # setup_loaded = True
         else:
             module_logger.debug('setup listener...')
