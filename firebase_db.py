@@ -137,15 +137,16 @@ setup_loaded = False
 def setup_listener(event):
     global setup, setup_loaded
     if event.data:
-        if event.path == "/":
+        if str(event.path) == "/":
             setup = event.data
         else:
-            path = re.sub(r'^/', '', event.path)
+            path = re.sub(r'^/', '', str(event.path))
             setup[path] = event.data
         if not setup_loaded:
             module_logger.debug("setup loaded: ")
             module_logger.debug(setup)
-            # setup_loaded = True
+            cleanup_json()
+            setup_loaded = True
         else:
             module_logger.debug('setup listener...')
 
