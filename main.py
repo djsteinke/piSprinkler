@@ -50,9 +50,11 @@ pFB = ProgramFB(None, None, None, None)
 p = Program(None, None, None, None)
 p_running = False
 
-delay = "2021-01-01 00:00:01"
+delay = "2021-01-01 00:00:00"
 
 
+# TODO remove
+"""
 def check():
     global p_running, p
     try:
@@ -81,6 +83,7 @@ def check():
         print("check() ERROR: " + str(e))
     timer = threading.Timer(60, check)
     timer.start()
+"""
 
 
 def get_timestamp(val):
@@ -167,6 +170,19 @@ def set_delay(action, days):
     else:
         ret['response']['status'] = f'error: invalid action type[{action}]'
     return ret, 200
+
+
+def run(action, key):
+    global p, p_running
+    if action == 'stop' and p_running:
+        p.cancel()
+    elif action == 'start' and not p_running:
+        program = firebase_db.setup['programs'][key]
+        if program is not None:
+            p_running = True
+            tempHistory = firebase_db.get_temp_history()
+            p = ProgramFB(program, firebase_db.setup, tempHistory, program_complete)
+            threading.Timer(1, p.start).start()
 
 
 @app.route('/program/<action>', defaults={'name': ""})
@@ -349,6 +365,7 @@ if __name__ == '__main__':
     except all:
         host_name = ip
     logger.info("machine host_name[" + host_name + "]")
+    firebase_db.program_cb = run_program
     threading.Timer(0.1, firebase_db.start_listeners).start()
     threading.Timer(5, check_fb).start()
     # t.start() # removed temperature reading moving it to pico w
