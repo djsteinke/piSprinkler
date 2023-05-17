@@ -234,7 +234,7 @@ def start_listeners():
                     pass
                 try:
                     setup_stream = db_setup.listen(setup_listener)
-                    current_stream = db_current.listen(current_listener)
+                    #current_stream = db_current.listen(current_listener)
                     module_logger.debug('streams open...')
                     reset_stream = False
                 except FirebaseError:
