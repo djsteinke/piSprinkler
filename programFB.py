@@ -52,10 +52,12 @@ class ProgramFB(object):
             self._timer.cancel()
         module_logger.debug("run_step() step: " + str(self._step) + "/" + str(self._step_cnt) + " running: " + str(self._running))
         if not self._running or self._step >= self._step_cnt:
+            module_logger.debug("run_step() stop()")
             self.stop()
         else:
-            log_msg = f"run_step() [{self._step + 1} of {self._step_cnt}]"
+            module_logger.debug(f"run_step() [{str(self._step + 1)} of {str(self._step_cnt)}]")
             run = True
+            module_logger.debug("run_step() steps: " + self._p['steps'])
             for step in self._p['steps']:
                 if step['step'] == self._step:
                     head = -1
