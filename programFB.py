@@ -6,7 +6,7 @@ import datetime as dt
 from static import get_f_from_c
 import firebase_db
 
-module_logger = logging.getLogger('main.program')
+module_logger = logging.getLogger('main.programFB')
 
 
 class ProgramFB(object):
