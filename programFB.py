@@ -63,12 +63,13 @@ class ProgramFB(object):
                     head = -1
                     pin = 0
                     zone = step['zone']
-                    module_logger.debug("run_step() zones: " + str(self._setup['zones']))
+                    module_logger.debug("run_step() zone: " + str(zone))
                     for z in self._setup['zones']:
                         if z['zone'] == zone:
                             pin = z['pin']
                             head = z['type']
                             break
+                    module_logger.debug("run_step() zone found pin: " + str(pin) + " head: " + str(head))
                     if pin > 0 and head >= 0:
                         self._relay = Relay(pin, self.run_step)
                         if step['time'] > 0:
