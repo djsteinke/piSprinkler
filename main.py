@@ -365,7 +365,7 @@ if __name__ == '__main__':
     except all:
         host_name = ip
     logger.info("machine host_name[" + host_name + "]")
-    firebase_db.program_cb = run_program
+    firebase_db.program_cb = run
     threading.Timer(0.1, firebase_db.start_listeners).start()
     threading.Timer(5, check_fb).start()
     # t.start() # removed temperature reading moving it to pico w
