@@ -127,6 +127,7 @@ def setup_listener(event):
 def current_listener(event):
     global current
     if event.data:
+        module_logger.debug("current_listener() path: " + str(event.path) + " data: " + str(event.data))
         if str(event.path) == "/":
             current = event.data
         else:
