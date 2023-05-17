@@ -50,7 +50,7 @@ class ProgramFB(object):
         self._run_time = 0
         if self._timer is not None:
             self._timer.cancel()
-        module_logger.debug("run_step() step: " + str(self._step) + "/" + str(self._step_cnt))
+        module_logger.debug("run_step() step: " + str(self._step) + "/" + str(self._step_cnt) + " running: " + str(self._running))
         if not self._running or self._step >= self._step_cnt:
             self.stop()
         else:

@@ -98,7 +98,6 @@ def check_fb():
         delay_timestamp = firebase_db.setup['delay'] if firebase_db.setup['delay'] > 0 else 1684254000000.0
         delay_date = dt.datetime.fromtimestamp(get_timestamp(delay_timestamp))
         for key in firebase_db.setup['programs']:
-            logger.debug(key)
             program = firebase_db.setup['programs'][key]
             next_date = dt.datetime.fromtimestamp(get_timestamp(program['nextRunTime']))
             # logger.debug(f"next_date: {str(next_date)}, running: {str(p_running)}, now: {str(dt.datetime.now())}, delay: {str(delay_date)}")
@@ -174,6 +173,7 @@ def set_delay(action, days):
 
 def run(action, key):
     global p, p_running
+    logger.debug("run() action: " + action + " key: " + key)
     if action == 'stop' and p_running:
         p.cancel()
         p_running = False
