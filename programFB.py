@@ -7,6 +7,11 @@ from static import get_f_from_c
 import firebase_db
 
 module_logger = logging.getLogger('main.programFB')
+watering_times = [
+    [0, 0, 0, 0, 12, 17, 18, 14, 11, 0, 0, 0],
+    [0, 0, 0, 0, 30, 43, 45, 34, 28, 0, 0, 0],
+    [0, 0, 0, 0, 24, 35, 36, 27, 23, 0, 0, 0]
+]
 
 
 class ProgramFB(object):
@@ -109,11 +114,11 @@ class ProgramFB(object):
             self._timer.start()
 
     def det_run_time(self, p, h):
+        date = dt.datetime.today()
+        month = dt.date.today().month - 1
+        date = date.replace(hour=0, minute=0, second=0, microsecond=0)
+        date -= dt.timedelta(days=1)
         try:
-            date = dt.datetime.today()
-            month = dt.date.today().month - 1
-            date = date.replace(hour=0, minute=0, second=0, microsecond=0)
-            date -= dt.timedelta(days=1)
             act_temp = 0
             act_cnt = 0
             for key in self._t:
@@ -127,10 +132,11 @@ class ProgramFB(object):
                 avg_temp = get_f_from_c(avg_temp)
             per_temp = 1.0
             if self._setup['averageTemps'][month] > 0:
-                per_temp = get_f_from_c(avg_temp) / self._setup['averageTemps'][month]
+                per_temp = avg_temp / self._setup['averageTemps'][month]
             return self._setup['wateringTimes'][h][month] * per_temp * 60.0 * p
         except Exception as e:
             module_logger.error("det_run_time() p: " + str(p) + "h: " + str(h) + "\nerror: " + str(e))
+            return watering_times[h][month]
 
     @property
     def p(self):
