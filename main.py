@@ -172,10 +172,11 @@ def set_delay(action, days):
 
 def run(action, key):
     global p, p_running
-    logger.debug("run() action: " + action + " key: " + key)
+    logger.debug("run() action: " + action + " key: " + key + " running: " + str(p_running))
     if action == 'stop' and p_running:
         p.cancel()
         p_running = False
+        logger.debug("run() stopped")
     elif action == 'start' and not p_running:
         program = firebase_db.setup['programs'][key]
         if program is not None:
@@ -183,6 +184,7 @@ def run(action, key):
             tempHistory = firebase_db.get_temp_history()
             p = ProgramFB(program, firebase_db.setup, tempHistory, program_complete)
             threading.Timer(1, p.start).start()
+            logger.debug("run() started")
 
 
 @app.route('/program/<action>', defaults={'name': ""})

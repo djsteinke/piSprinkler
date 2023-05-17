@@ -239,6 +239,7 @@ def start_listeners():
                     pass
                 try:
                     setup_stream = db_setup.listen(setup_listener)
+                    sleep(5)
                     current_stream = db_current.listen(current_listener)
                     module_logger.debug('streams open...')
                     reset_stream = False
