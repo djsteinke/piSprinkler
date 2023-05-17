@@ -71,13 +71,17 @@ class ProgramFB(object):
                             break
                     module_logger.debug("run_step() zone found pin: " + str(pin) + " head: " + str(head))
                     if pin > 0 and head >= 0:
+                        module_logger.debug("create relay...")
                         self._relay = Relay(pin, self.run_step)
+                        module_logger.debug("relay created.")
                         if step['time'] > 0:
                             t = step['time'] * 60
                         else:
                             t = self.det_run_time(step['percent'] / 100.0, head)
                             t = t * 12.0 / (28.0 / self._p['interval'])
-                        log_msg += f" zone[{zone}] head[{head}] pin[{pin}] time[{int(t/60)}]"
+
+                        module_logger.debug("run time: " + str(int(t/60)))
+                        log_msg += f" zone[{str(zone)}] head[{str(head)}] pin[{str(pin)}] time[{str(int(t/60))}]"
                         if t > 0:
                             run = False
                             self._step_time = int(t)
@@ -85,8 +89,11 @@ class ProgramFB(object):
                             w = 3
                             if step['wait'] > 0:
                                 w = step['wait'] * 60
+
+                            module_logger.debug("t > 0 start relay wait: " + str(0))
                             self._relay.set_wait(w)
                             self._relay.on()
+                            module_logger.debug("t > 0 relay started")
                             self._timer = threading.Timer(60, self.set_run_time)
                             self._timer.start()
                         else:
