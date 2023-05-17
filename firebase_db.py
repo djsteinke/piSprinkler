@@ -24,7 +24,7 @@ default_app = firebase_admin.initialize_app(cred_obj, {
 ref = db.reference(appKey)
 
 db_setup = ref.child('setupFB')
-db_current = ref.child('current')
+db_current = ref.child('currentFB')
 
 
 t = 0.0
