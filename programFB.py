@@ -55,7 +55,7 @@ class ProgramFB(object):
             module_logger.debug("run_step() stop()")
             self.stop()
         else:
-            module_logger.debug(f"run_step() [{str(self._step + 1)} of {str(self._step_cnt)}]")
+            log_msg = f"run_step() [{str(self._step + 1)} of {str(self._step_cnt)}]"
             run = True
             module_logger.debug("run_step() steps: " + str(self._p['steps']))
             for step in self._p['steps']:
@@ -63,6 +63,7 @@ class ProgramFB(object):
                     head = -1
                     pin = 0
                     zone = step['zone']
+                    module_logger.debug("run_step() zones: " + str(self._setup['zones']))
                     for z in self._setup['zones']:
                         if z['zone'] == zone:
                             pin = z['pin']
