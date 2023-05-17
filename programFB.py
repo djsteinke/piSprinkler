@@ -24,7 +24,7 @@ class ProgramFB(object):
         self._timer = None
 
     def start(self):
-        module_logger.debug("start()")
+        module_logger.debug("start() : " + self._p['name'])
         self._step_cnt = len(self._p["steps"])
         self._running = True
         self.run_step()
@@ -41,7 +41,7 @@ class ProgramFB(object):
         self._relay = None
         self._step = -1
         self._step_cnt = 0
-        if self._callback is not None:
+        if callable(self._callback):
             self._callback()
 
     def run_step(self):

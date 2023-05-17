@@ -176,6 +176,7 @@ def run(action, key):
     global p, p_running
     if action == 'stop' and p_running:
         p.cancel()
+        p_running = False
     elif action == 'start' and not p_running:
         program = firebase_db.setup['programs'][key]
         if program is not None:
