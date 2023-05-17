@@ -227,6 +227,10 @@ def start_listeners():
         if internet_on():
             if reset_stream:
                 try:
+                    current_stream.close()
+                except:
+                    pass
+                try:
                     setup_stream.close()
                     module_logger.debug('streams closed...')
                 except:
@@ -234,7 +238,7 @@ def start_listeners():
                     pass
                 try:
                     setup_stream = db_setup.listen(setup_listener)
-                    #current_stream = db_current.listen(current_listener)
+                    current_stream = db_current.listen(current_listener)
                     module_logger.debug('streams open...')
                     reset_stream = False
                 except FirebaseError:
