@@ -109,25 +109,28 @@ class ProgramFB(object):
             self._timer.start()
 
     def det_run_time(self, p, h):
-        date = dt.datetime.today()
-        month = dt.date.today().month - 1
-        date = date.replace(hour=0, minute=0, second=0, microsecond=0)
-        date -= dt.timedelta(days=1)
-        act_temp = 0
-        act_cnt = 0
-        for key in self._t:
-            t = self._t[key]
-            act_temp += t['t']
-            act_cnt += 1
-        min_cnt = int(firebase_db.t_start/(20*60) * 0.85)
-        avg_temp = self._setup['average_temps'][month]
-        if act_cnt >= min_cnt:
-            avg_temp = act_temp / act_cnt
-            avg_temp = get_f_from_c(avg_temp)
-        per_temp = 1.0
-        if self._setup['average_temps'][month] > 0:
-            per_temp = get_f_from_c(avg_temp) / self._setup['average_temps'][month]
-        return self._setup['watering_times'][h][month] * per_temp * 60.0 * p
+        try:
+            date = dt.datetime.today()
+            month = dt.date.today().month - 1
+            date = date.replace(hour=0, minute=0, second=0, microsecond=0)
+            date -= dt.timedelta(days=1)
+            act_temp = 0
+            act_cnt = 0
+            for key in self._t:
+                t = self._t[key]
+                act_temp += t['t']
+                act_cnt += 1
+            min_cnt = int(firebase_db.t_start/(20*60) * 0.85)
+            avg_temp = self._setup['average_temps'][month]
+            if act_cnt >= min_cnt:
+                avg_temp = act_temp / act_cnt
+                avg_temp = get_f_from_c(avg_temp)
+            per_temp = 1.0
+            if self._setup['average_temps'][month] > 0:
+                per_temp = get_f_from_c(avg_temp) / self._setup['average_temps'][month]
+            return self._setup['watering_times'][h][month] * per_temp * 60.0 * p
+        except Exception as e:
+            module_logger.error("det_run_time() p: " + str(p) + "h: " + str(h) + "\nerror: " + str(e))
 
     @property
     def p(self):
