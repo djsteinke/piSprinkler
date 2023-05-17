@@ -57,7 +57,7 @@ class ProgramFB(object):
         else:
             module_logger.debug(f"run_step() [{str(self._step + 1)} of {str(self._step_cnt)}]")
             run = True
-            module_logger.debug("run_step() steps: " + self._p['steps'])
+            module_logger.debug("run_step() steps: " + str(self._p['steps']))
             for step in self._p['steps']:
                 if step['step'] == self._step:
                     head = -1
