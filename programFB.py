@@ -121,14 +121,14 @@ class ProgramFB(object):
                 act_temp += t['t']
                 act_cnt += 1
             min_cnt = int(firebase_db.t_start/(20*60) * 0.85)
-            avg_temp = self._setup['average_temps'][month]
+            avg_temp = self._setup['averageTemps'][month]
             if act_cnt >= min_cnt:
                 avg_temp = act_temp / act_cnt
                 avg_temp = get_f_from_c(avg_temp)
             per_temp = 1.0
-            if self._setup['average_temps'][month] > 0:
-                per_temp = get_f_from_c(avg_temp) / self._setup['average_temps'][month]
-            return self._setup['watering_times'][h][month] * per_temp * 60.0 * p
+            if self._setup['averageTemps'][month] > 0:
+                per_temp = get_f_from_c(avg_temp) / self._setup['averageTemps'][month]
+            return self._setup['wateringTimes'][h][month] * per_temp * 60.0 * p
         except Exception as e:
             module_logger.error("det_run_time() p: " + str(p) + "h: " + str(h) + "\nerror: " + str(e))
 
