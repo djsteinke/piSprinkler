@@ -52,7 +52,6 @@ p_running = False
 
 delay = "2021-01-01 00:00:00"
 
-
 # TODO remove
 """
 def check():
@@ -87,15 +86,14 @@ def check():
 
 
 def get_timestamp(val):
-    return val if val < 9000000000 else val/1000
+    return val if val < 9000000000 else val / 1000
 
 
 def check_fb():
     global p_running, p
     try:
         logger.debug(".")
-        delay_timestamp = firebase_db.current['delay'] if firebase_db.current['delay'] and \
-                                                          firebase_db.current['delay'] > 0 else 1684254000000.0
+        delay_timestamp = firebase_db.current['delay'] if firebase_db.current['delay'] and firebase_db.current['delay'] > 0 else 1684254000000.0
         delay_date = dt.datetime.fromtimestamp(get_timestamp(delay_timestamp))
         for key in firebase_db.setup['programs']:
             program = firebase_db.setup['programs'][key]
@@ -116,7 +114,7 @@ def check_fb():
                 next_date += dt.timedelta(days=interval)
                 next_date = next_date.replace(hour=start_time.hour, minute=start_time.minute, second=0, microsecond=0)
                 program["nextRunTime"] = next_date.timestamp()
-                firebase_db.set_next_run_time(program["name"], next_date.timestamp()*1000)
+                firebase_db.set_next_run_time(program["name"], next_date.timestamp() * 1000)
                 logger.info(f"{program['name']} : next run {next_date}")
     except Exception as e:
         msg = ''.join(traceback.format_exception(None, e, e.__traceback__))
@@ -145,9 +143,9 @@ def set_delay(action, days):
     d = int(days)
     ret = {"type": "delay",
            "response": {
-                "action": action,
-                "status": "",
-                "date": ""}}
+               "action": action,
+               "status": "",
+               "date": ""}}
     if action == 'set':
         d = d + 1
         delay_date = dt.datetime.now()
@@ -194,9 +192,9 @@ def run_program(action, name):
     global p_running, s, p
     ret = {"type": "program",
            "response": {
-                "action": action,
-                "name": name,
-                "status": ""}}
+               "action": action,
+               "name": name,
+               "status": ""}}
     if action == "run":
         for program in s.setup['programs']:
             if program['name'] == name:
