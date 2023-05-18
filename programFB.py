@@ -27,6 +27,7 @@ class ProgramFB(object):
         self._run_time = 0
         self._running = False
         self._timer = None
+        self._is_cancel = False
 
     def start(self):
         module_logger.debug("start() : " + self._p['name'])
@@ -40,6 +41,7 @@ class ProgramFB(object):
         self._running = False
         if self._relay is not None:
             self._relay.force_off()
+        self._is_cancel = True
 
     def stop(self):
         module_logger.debug("stop()")
@@ -47,14 +49,15 @@ class ProgramFB(object):
         self._relay = None
         self._step = -1
         self._step_cnt = 0
-        firebase_db.current['action'] = 'none'
-        firebase_db.current['currentStep'] = -1
-        firebase_db.current['programName'] = 'none'
-        firebase_db.current['programStartTime'] = 0
-        firebase_db.current['stepStartTime'] = 0
-        firebase_db.set_value('currentFB', firebase_db.current)
-        if callable(self._callback):
-            self._callback()
+        if not self._is_cancel:
+            firebase_db.current['action'] = 'none'
+            firebase_db.current['currentStep'] = -1
+            firebase_db.current['programName'] = 'none'
+            firebase_db.current['programStartTime'] = 0
+            firebase_db.current['stepStartTime'] = 0
+            firebase_db.set_value('currentFB', firebase_db.current)
+            if callable(self._callback):
+                self._callback()
 
     def run_step(self):
         self._step += 1
