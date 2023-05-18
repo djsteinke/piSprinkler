@@ -94,7 +94,7 @@ def check_fb():
     try:
         logger.debug(".")
         if firebase_db.ref_loaded():
-            delay_days = firebase_db.current['delay'] if firebase_db.current['delay'] else 0
+            delay_days = firebase_db.current['delay']
             delay_date = dt.datetime.now()
             delay_date += dt.timedelta(days=delay_days)
             for key in firebase_db.setup['programs']:
