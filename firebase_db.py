@@ -128,7 +128,7 @@ def setup_listener(event):
             module_logger.debug(setup)
             setup_loaded = True
         else:
-            module_logger.debug('setup listener...')
+            module_logger.debug('setup listener... ' + str(event.path))
 
 
 def current_listener(event):
