@@ -207,6 +207,7 @@ def set_value(path=None, value=None):
             try:
                 ref.child(update[0]).set(update[1])
                 set_value_list.remove(update)
+                module_logger.debug("set_value() : " + update[0] + " value: " + str(update[1]))
             except Exception as e:
                 module_logger.error("set_value() : " + update[0] + " value: " + str(update[1]) + " error: " + str(e))
 
