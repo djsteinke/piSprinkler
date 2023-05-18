@@ -62,11 +62,12 @@ class Relay(object):
         self.off()
 
     def off(self):
-        module_logger.debug("off() - " + self.__str__())
         GPIO.output(self._pin, self._gpio_off)
+        self._on = False
         if self._callback is not None:
             timer = threading.Timer(self._wait, self._callback)
             timer.start()
+        module_logger.debug("off() - " + self.__str__())
 
     def get_pin(self):
         return str(self._pin)
