@@ -174,7 +174,7 @@ def set_delay(action, days):
 def run(action, key):
     global p, p_running
     logger.debug("run() action: " + action + " key: " + key + " running: " + str(p_running))
-    if action == 'stop' and p_running:
+    if action == 'cancel' and p_running:
         p.cancel()
         p_running = False
         logger.debug("run() stopped")

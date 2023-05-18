@@ -142,15 +142,10 @@ def current_listener(event):
             path = re.sub(r'^/', '', str(event.path))
             current[path] = event.data
         action = current['action'] if current['action'] else 'none'
-        if action == 'stop':
+        if action != 'none':
             if callable(program_cb):
-                program_cb('cancel', None)
+                program_cb(action, current['programName'])
             db_current.child('action').set('none')
-            return
-        elif action == 'start':
-            if current['programName'] and current['programName'] != 'none':
-                if callable(program_cb):
-                    program_cb('start', current['programName'])
 
 
 def get_temp_history():
