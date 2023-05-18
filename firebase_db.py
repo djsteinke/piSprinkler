@@ -43,6 +43,11 @@ delay = dt.datetime.now()
 average_temps = []
 watering_times = []
 program_cb = None
+loaded = [False, False]
+
+
+def ref_loaded():
+    return loaded[0] and loaded[1]
 
 
 def add_temp(day_val_in, time_val_in=None):
@@ -113,6 +118,7 @@ def setup_listener(event):
     if event.data:
         if str(event.path) == "/":
             setup = event.data
+            loaded[0] = True
         else:
             path = re.sub(r'^/', '', str(event.path))
             setup[path] = event.data
@@ -130,6 +136,7 @@ def current_listener(event):
         module_logger.debug("current_listener() path: " + str(event.path) + " data: " + str(event.data))
         if str(event.path) == "/":
             current = event.data
+            loaded[1] = True
         else:
             path = re.sub(r'^/', '', str(event.path))
             current[path] = event.data

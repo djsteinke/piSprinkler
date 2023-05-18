@@ -93,30 +93,31 @@ def check_fb():
     global p_running, p
     try:
         logger.debug(".")
-        delay_days = firebase_db.current['delay'] if firebase_db.current['delay'] else 0
-        delay_date = dt.datetime.now()
-        delay_date += dt.timedelta(days=delay_days)
-        for key in firebase_db.setup['programs']:
-            program = firebase_db.setup['programs'][key]
-            next_date = dt.datetime.fromtimestamp(get_timestamp(program['nextRunTime']))
-            # logger.debug(f"next_date: {str(next_date)}, running: {str(p_running)}, now: {str(dt.datetime.now())}, delay: {str(delay_date)}")
-            if next_date < dt.datetime.now() and not p_running:
-                interval = 1
-                if next_date >= delay_date:
-                    interval = program["interval"]
-                    tempHistory = firebase_db.get_temp_history()
-                    p = ProgramFB(program, firebase_db.setup, tempHistory, program_complete)
-                    if program['active']:
-                        p_running = True
-                        p.start()
-                start_time = dt.datetime.fromtimestamp(get_timestamp(program["startTime"]))
-                logger.debug(f"start_time : {str(start_time)}")
-                next_date = dt.datetime.now()
-                next_date += dt.timedelta(days=interval)
-                next_date = next_date.replace(hour=start_time.hour, minute=start_time.minute, second=0, microsecond=0)
-                program["nextRunTime"] = next_date.timestamp()
-                firebase_db.set_next_run_time(program["name"], next_date.timestamp() * 1000)
-                logger.info(f"{program['name']} : next run {next_date}")
+        if firebase_db.ref_loaded():
+            delay_days = firebase_db.current['delay'] if firebase_db.current['delay'] else 0
+            delay_date = dt.datetime.now()
+            delay_date += dt.timedelta(days=delay_days)
+            for key in firebase_db.setup['programs']:
+                program = firebase_db.setup['programs'][key]
+                next_date = dt.datetime.fromtimestamp(get_timestamp(program['nextRunTime']))
+                # logger.debug(f"next_date: {str(next_date)}, running: {str(p_running)}, now: {str(dt.datetime.now())}, delay: {str(delay_date)}")
+                if next_date < dt.datetime.now() and not p_running:
+                    interval = 1
+                    if next_date >= delay_date:
+                        interval = program["interval"]
+                        tempHistory = firebase_db.get_temp_history()
+                        p = ProgramFB(program, firebase_db.setup, tempHistory, program_complete)
+                        if program['active']:
+                            p_running = True
+                            p.start()
+                    start_time = dt.datetime.fromtimestamp(get_timestamp(program["startTime"]))
+                    logger.debug(f"start_time : {str(start_time)}")
+                    next_date = dt.datetime.now()
+                    next_date += dt.timedelta(days=interval)
+                    next_date = next_date.replace(hour=start_time.hour, minute=start_time.minute, second=0, microsecond=0)
+                    program["nextRunTime"] = next_date.timestamp()
+                    firebase_db.set_next_run_time(program["name"], next_date.timestamp() * 1000)
+                    logger.info(f"{program['name']} : next run {next_date}")
     except Exception as e:
         msg = ''.join(traceback.format_exception(None, e, e.__traceback__))
         logger.error("check_fb()", msg)
