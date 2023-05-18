@@ -32,7 +32,7 @@ class ProgramFB(object):
         module_logger.debug("start() : " + self._p['name'])
         self._step_cnt = len(self._p["steps"])
         self._running = True
-        firebase_db.set_value('currentFB/programStartTime', dt.datetime.now().timestamp())
+        firebase_db.set_value('currentFB/programStartTime', dt.datetime.now().timestamp()*1000)
         self.run_step()
 
     def cancel(self):
@@ -68,7 +68,7 @@ class ProgramFB(object):
             self.stop()
         else:
             log_msg = f"run_step() [{str(self._step + 1)} of {str(self._step_cnt)}]"
-            firebase_db.set_value('currentFB/stepStartTime', dt.datetime.now().timestamp())
+            firebase_db.set_value('currentFB/stepStartTime', dt.datetime.now().timestamp()*1000)
             firebase_db.set_value('currentFB/currentStep', self._step)
             run = True
             module_logger.debug("run_step() steps: " + str(self._p['steps']))
