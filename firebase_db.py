@@ -37,6 +37,7 @@ timer = 0
 network_up = True
 reset_stream = True
 add_temp_list = []
+set_value_list = []
 setup = {}
 current = {}
 delay = dt.datetime.now()
@@ -198,20 +199,39 @@ def set_humidity(in_val=humid_in_val):
         threading.Timer(300, set_humidity).start()
 
 
+def set_value(path=None, value=None):
+    if path is not None:
+        set_value_list.append([path, value])
+
+    if not network_up:
+        module_logger.error("set_value() network down, try again later")
+        threading.Timer(300, set_value).start()
+        return
+    else:
+        for update in list(set_value_list):
+            try:
+                ref.child(update[0]).set(update[1])
+                set_value_list.remove(update)
+            except Exception as e:
+                module_logger.error("set_value() : " + update[0] + " value: " + str(update[1]) + " error: " + str(e))
+
+
 def set_next_run_time(prog_key=None, in_val=None):
     if prog_key is not None:
         next_run_time_list.append([prog_key, in_val])
-    try:
-        if network_up:
-            for update in list(next_run_time_list):
+
+    if not network_up:
+        module_logger.error("set_next_run_time() network down, try again later")
+        threading.Timer(300, set_next_run_time).start()
+        return
+    else:
+        for update in list(next_run_time_list):
+            try:
                 child = f"programs/{update[0]}/nextRunTime"
                 db_setup.child(child).set(update[1])
                 next_run_time_list.remove(update)
-        else:
-            raise Exception("network down. try again later.")
-    except:
-        module_logger.error("error in updating program, nextRunTime", str(next_run_time_list))
-        threading.Timer(300, set_next_run_time).start()
+            except Exception as e:
+                module_logger.error("set_next_run_time() : " + update[0] + " value: " + str(update[1]) + " error: " + str(e))
 
 
 def internet_on():
