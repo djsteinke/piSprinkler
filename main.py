@@ -4,6 +4,7 @@ import socket
 import threading
 import datetime as dt
 import traceback
+from time import sleep
 
 from dateutil import parser
 
@@ -178,9 +179,13 @@ def run(action, key):
         p.cancel()
         p_running = False
         logger.debug("run() stopped")
-    elif action == 'start' and not p_running:
+    elif action == 'start':
         program = firebase_db.setup['programs'][key]
         if program is not None:
+            if p_running:
+                p.cancel()
+                p_running = False
+                sleep(3)
             p_running = True
             tempHistory = firebase_db.get_temp_history()
             p = ProgramFB(program, firebase_db.setup, tempHistory, program_complete)
