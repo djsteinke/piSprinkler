@@ -63,17 +63,18 @@ def check_program(now, program):
 
 
 def check_fb(now):
-    global p_running, p, last_check_fb
+    global last_check_fb
     if now.timestamp() - last_check_fb.timestamp() >= check_fb_interval:
-        try:
-            logger.debug(".")
-            if firebase_db.ref_loaded():
-                check_delay()
-                for key in firebase_db.setup['programs']:
-                    program = firebase_db.setup['programs'][key]
-                    check_program(now, program)
-        except Exception:
-            logger.error("check_fb()" + traceback.format_exc())
+        if not p_running:
+            try:
+                logger.debug(".")
+                if firebase_db.ref_loaded():
+                    check_delay()
+                    for key in firebase_db.setup['programs']:
+                        program = firebase_db.setup['programs'][key]
+                        check_program(now, program)
+            except Exception:
+                logger.error("check_fb()" + traceback.format_exc())
         last_check_fb = now
 
 
