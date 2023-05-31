@@ -1,5 +1,6 @@
 import logging
 import threading
+import traceback
 
 from relay import Relay
 import datetime as dt
@@ -49,9 +50,12 @@ class ProgramFB(object):
         self._step_cnt = len(self._p["steps"])
         self._running = True
         firebase_db.set_value('currentFB/programStartTime', dt.datetime.now().timestamp()*1000)
-        self._this["name"] = self._p["name"]
-        self._this["start"] = str(dt.datetime.now())
-        self._this["steps"] = []
+        try:
+            self._this["name"] = self._p["name"]
+            self._this["start"] = str(dt.datetime.now())
+            self._this["steps"] = []
+        except Exception:
+            module_logger.error(traceback.format_exc())
         self.run_step()
 
     def cancel(self):
@@ -81,8 +85,10 @@ class ProgramFB(object):
                 self._callback()
 
     def run_step(self):
-        if self._this['steps'][self._step]:
+        try:
             self._this['steps'][self._step]['end'] = str(dt.datetime.now())
+        except:
+            pass
         self._step += 1
         self._step_time = 0
         self._run_time = 0
