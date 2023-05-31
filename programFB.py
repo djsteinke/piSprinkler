@@ -13,11 +13,25 @@ watering_times = [
     [0, 0, 0, 0, 24, 35, 36, 27, 23, 0, 0, 0]
 ]
 
+"""
+{
+    "name": "name",
+    "start": "2023-05-31 06:30:00",
+    "end": "2023-05-31 08:30:00",
+    "steps": [
+        {"step": 0,
+        "zone": 1,
+        "start": "2023-05-31 06:30:00",
+        "end": "2023-05-31 08:30:00"}
+    ]
+}
+"""
+
 
 class ProgramFB(object):
-    def __init__(self, p, s, t, callback):
+    def __init__(self, p, t, callback):
         self._p = p
-        self._setup = s
+        self._setup = firebase_db.setup
         self._t = t
         self._relay = None
         self._callback = callback
@@ -28,16 +42,21 @@ class ProgramFB(object):
         self._running = False
         self._timer = None
         self._is_cancel = False
+        self._this = {}
 
     def start(self):
         module_logger.debug("start() : " + self._p['name'])
         self._step_cnt = len(self._p["steps"])
         self._running = True
         firebase_db.set_value('currentFB/programStartTime', dt.datetime.now().timestamp()*1000)
+        self._this["name"] = self._p["name"]
+        self._this["start"] = str(dt.datetime.now())
+        self._this["steps"] = []
         self.run_step()
 
     def cancel(self):
         module_logger.debug("cancel()")
+        self._this['cancel'] = True
         self._running = False
         if self._relay is not None:
             self._relay.force_off()
@@ -49,6 +68,8 @@ class ProgramFB(object):
         self._relay = None
         self._step = -1
         self._step_cnt = 0
+        self._this['end'] = str(dt.datetime.now())
+        firebase_db.add_value("historyFB", self._this)
         if not self._is_cancel:
             firebase_db.current['action'] = 'none'
             firebase_db.current['currentStep'] = -1
@@ -60,6 +81,8 @@ class ProgramFB(object):
                 self._callback()
 
     def run_step(self):
+        if self._this['steps'][self._step]:
+            self._this['steps'][self._step]['end'] = str(dt.datetime.now())
         self._step += 1
         self._step_time = 0
         self._run_time = 0
@@ -113,6 +136,7 @@ class ProgramFB(object):
                             module_logger.debug("t > 0 relay started")
                             self._timer = threading.Timer(60, self.set_run_time)
                             self._timer.start()
+                            self._this['steps'].append({"step": self._step, "zone": zone, "start": str(dt.datetime.now())})
                         else:
                             run = True
             module_logger.debug(log_msg)

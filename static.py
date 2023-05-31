@@ -1,12 +1,8 @@
 import logging
 import os
-import threading
-
-import requests
-
-import properties
 import smbus
 import time
+
 
 bus = smbus.SMBus(1)
 config = [0x08, 0x00]
@@ -16,23 +12,8 @@ fdir = os.path.abspath('/home/pi/projects/piSprinkler')
 module_logger = logging.getLogger('main.static')
 
 
-class ExternalSystemError(Exception):
-    pass
-
-
 def get_f_from_c(c):
     return c*1.8+32
-
-
-def get_logging_level():
-    if properties.log_debug:
-        return logging.DEBUG
-    elif properties.log_info:
-        return logging.INFO
-    elif properties.log_warning:
-        return logging.WARNING
-    else:
-        return logging.ERROR
 
 
 def get_sensor_temp():
@@ -50,25 +31,4 @@ def get_sensor_temp():
 
 
 def get_temperature():
-    """
-    try:
-        x = requests.get('http://192.168.0.140:31000/getTemp', timeout=10)
-        if not x.ok:
-            raise ExternalSystemError(f'Response Error: {x.status_code} - {x.reason}')
-        msg = x.json()
-        if msg['humidity'] < 0:
-            raise ExternalSystemError('Client Error: Sensor not connected.')
-        return [msg['temp'], msg['humidity']]
-    except requests.exceptions.HTTPError as err:
-        log_msg = f"Http Error: {err}"
-    except requests.exceptions.ConnectionError as err:
-        log_msg = f"Error Connecting: {err}"
-    except requests.exceptions.Timeout as err:
-        log_msg = f"Timeout Error: {err}"
-    except requests.exceptions.RequestException as err:
-        log_msg = f"Request Error: {err}"
-    except ExternalSystemError as err:
-        log_msg = err
-    module_logger.debug(log_msg)
-    """
     return get_sensor_temp()

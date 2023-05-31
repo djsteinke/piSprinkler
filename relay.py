@@ -2,10 +2,6 @@ import logging
 import threading
 
 import RPi.GPIO as GPIO
-import logging
-
-GPIO.setmode(GPIO.BCM)
-GPIO.setwarnings(False)
 
 module_logger = logging.getLogger('main.relay')
 
