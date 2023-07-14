@@ -15,4 +15,7 @@ ref = db.reference(appKey)
 child = ref.child('historyFB')
 
 histories = child.get()
-print(histories)
+
+for key, value in iter(histories):
+    print(key, value)
+    break
