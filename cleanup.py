@@ -12,17 +12,7 @@ default_app = firebase_admin.initialize_app(cred_obj, {
 
 ref = db.reference(appKey)
 
-child = ref.child('history')
-child.delete()
+child = ref.child('historyFB')
 
-child = ref.child('humidity')
-child.delete()
-
-child = ref.child('programs')
-child.delete()
-
-child = ref.child('setup')
-child.delete()
-
-child = ref.child('temperature')
-child.delete()
+histories = child.get()
+print(histories)
