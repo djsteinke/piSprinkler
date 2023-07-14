@@ -70,6 +70,18 @@ def add_value(path=None, val=None):
                 module_logger.error("set_value() : " + new[0] + " value: " + str(new[1]) + " error: " + str(e))
 
 
+def set_nested(dic, keys, value):
+    d = dic
+    for key in keys[:-1]:
+        if key in d:
+            d = d[key]
+        else:
+            d = d.setdefault(key, {})
+    if keys[-1] in d:
+        d[keys[-1]] = value
+    return dic
+
+
 def setup_listener(event):
     global setup, setup_loaded
     if event.data:
@@ -78,9 +90,10 @@ def setup_listener(event):
             loaded[0] = True
         else:
             path = re.sub(r'^/', '', str(event.path))
-            setup[path] = event.data
-            module_logger.debug('new data:' + str(event.data))
-            module_logger.debug('new setup:' + str(setup))
+            keys = path.split('/')
+            setup = set_nested(setup, keys, event.data)
+            module_logger.debug(setup)
+
         if not setup_loaded:
             module_logger.debug("setup loaded: ")
             module_logger.debug(setup)
