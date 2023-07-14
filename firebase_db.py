@@ -99,8 +99,6 @@ def setup_listener(event):
             path = re.sub(r'^/', '', str(event.path))
             keys = path.split('/')
             setup = set_nested(setup, keys, event.data)
-            module_logger.debug(setup)
-
         if not setup_loaded:
             module_logger.debug("setup loaded: ")
             module_logger.debug(setup)
