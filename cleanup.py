@@ -27,7 +27,7 @@ for key in histories:
     if new_hist not in hist_list:
         hist_list.append(new_hist)
     else:
-        historyFB.child(key).remove()
+        #historyFB.child(key).remove()
         break
     #cnt += 1
     #if cnt > 1:
