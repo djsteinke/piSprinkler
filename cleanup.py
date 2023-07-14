@@ -12,11 +12,22 @@ default_app = firebase_admin.initialize_app(cred_obj, {
 
 ref = db.reference(appKey)
 
-child = ref.child('historyFB')
+historyFB = ref.child('historyFB')
 
-histories = child.get()
+histories = historyFB.get()
+
+hist_list = []
+
+cnt = 0
 
 for key in histories:
     value = histories[key]
     print(key, value)
-    break
+    new_hist = [key, value['start']]
+    if new_hist not in hist_list:
+        hist_list.append(new_hist)
+    else:
+        historyFB.child(key).remove()
+    cnt += 1
+    if cnt > 1:
+        break
