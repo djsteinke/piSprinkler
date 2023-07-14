@@ -43,8 +43,6 @@ def check_delay():
 def check_program(now, program):
     global p_running, p
     next_date = dt.datetime.fromtimestamp(get_timestamp(program['nextRunTime']))
-    if program['name'] == 'single':
-        logger.debug("check_program() " + str(program))
     if next_date < now and not p_running:
         interval = 1
         if next_date >= delay:
