@@ -29,7 +29,7 @@ for key in histories:
     else:
         print('remove()')
         historyFB.child(key).delete()
-        break
+        #break
     #cnt += 1
     #if cnt > 1:
     #    break
