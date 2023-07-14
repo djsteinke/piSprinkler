@@ -16,6 +16,7 @@ child = ref.child('historyFB')
 
 histories = child.get()
 
-for key, value in iter(histories):
+for key in histories:
+    value = histories[key]
     print(key, value)
     break
