@@ -28,6 +28,7 @@ for key in histories:
         hist_list.append(new_hist)
     else:
         historyFB.child(key).remove()
+        break
     #cnt += 1
     #if cnt > 1:
     #    break
