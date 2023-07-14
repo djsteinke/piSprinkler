@@ -80,6 +80,7 @@ def setup_listener(event):
             path = re.sub(r'^/', '', str(event.path))
             setup[path] = event.data
             module_logger.debug('new data:' + str(event.data))
+            module_logger.debug('new setup:' + str(setup))
         if not setup_loaded:
             module_logger.debug("setup loaded: ")
             module_logger.debug(setup)
