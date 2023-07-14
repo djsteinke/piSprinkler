@@ -49,6 +49,7 @@ class ProgramFB(object):
         module_logger.debug("start() : " + self._p['name'])
         self._step_cnt = len(self._p["steps"])
         self._running = True
+        firebase_db.set_value('currentFB/programName', self._p['name'])
         firebase_db.set_value('currentFB/programStartTime', dt.datetime.now().timestamp()*1000)
         try:
             self._this["name"] = self._p["name"]

@@ -59,12 +59,19 @@ new_history_tmp.set(time_val)
 def add_value(path=None, val=None):
     if path is not None:
         add_value_list.append([path, val])
-    if network_up:
-        for new in list(add_value_list):
+
+    if not network_up:
+        module_logger.error("add_value() network down, try again later")
+        threading.Timer(300, add_value).start()
+        return
+    else:
+        tmp_list = add_value_list
+        for new in list(tmp_list):
             try:
                 new_path = ref.child(new[0])
                 new_ref = new_path.push()
                 new_ref.set(new[1])
+                add_value_list.remove(new)
                 module_logger.debug("add_value() : " + new[0] + " value: " + str(new[1]))
             except Exception as e:
                 module_logger.error("set_value() : " + new[0] + " value: " + str(new[1]) + " error: " + str(e))
@@ -142,7 +149,8 @@ def set_value(path=None, value=None):
         threading.Timer(300, set_value).start()
         return
     else:
-        for update in list(set_value_list):
+        tmp_list = set_value_list
+        for update in list(tmp_list):
             try:
                 ref.child(update[0]).set(update[1])
                 set_value_list.remove(update)
