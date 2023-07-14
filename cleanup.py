@@ -23,10 +23,11 @@ cnt = 0
 for key in histories:
     value = histories[key]
     print(key, value)
-    new_hist = [key, value['start']]
+    new_hist = [value['name'], value['start']]
     if new_hist not in hist_list:
         hist_list.append(new_hist)
     else:
+        print('remove()')
         #historyFB.child(key).remove()
         break
     #cnt += 1
